@@ -1,0 +1,82 @@
+package com.kykj.tesla.mall.controller;
+
+import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson.JSONArray;
+import com.github.pagehelper.PageInfo;
+import com.kykj.tesla.mall.entity.${module};
+import com.kykj.tesla.mall.service.${module}Service;
+import com.kykj.tesla.mall.v2.${module}MerchantInterface;
+import com.kykj.tesla.mall.v2.model.${module}ListModel;
+import com.kykj.tesla.mall.v2.model.${module}Model;
+import com.kykj.tesla.mall.v2.request.${module}GetRequest;
+import com.kykj.tesla.mall.v2.request.${module}ListRequest;
+import com.kykj.tesla.platform.service.response.NewResultResponse;
+import com.kykj.tesla.platform.service.response.ResultResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+@RestController
+@Slf4j
+public class ${module}MerchantController implements ${module}MerchantInterface {
+
+    @Autowired
+    private ${module}Service ${moduleLittle}Service;
+
+
+    @Override
+    public ResultResponse save (@RequestBody @Valid ${module}Model ${moduleLittle}Model) {
+        ResultResponse response = new ResultResponse();
+        ${module} entity = new ${module}();
+        BeanUtil.copyProperties(${moduleLittle}Model,entity);
+        ${moduleLittle}Service.save${module}(entity);
+        return response;
+    }
+
+    @Override
+    public NewResultResponse<${module}Model> get (@RequestBody @Valid ${module}GetRequest request) {
+        NewResultResponse<${module}Model> resultResponse = new NewResultResponse<>();
+        ${module} ${moduleLittle} = ${moduleLittle}Service.get(request.getId());
+        if (${moduleLittle} == null) {
+            resultResponse.resetError("数据不存在！");
+            return resultResponse;
+        }
+        ${module}Model ${moduleLittle}Model = new ${module}Model();
+        BeanUtil.copyProperties(${moduleLittle},${moduleLittle}Model);
+        resultResponse.setDatas(${moduleLittle}Model);
+        return resultResponse;
+    }
+
+    @Override
+    public NewResultResponse<PageInfo<${module}ListModel>> pageList(@RequestBody ${module}ListRequest request) {
+        NewResultResponse<PageInfo<${module}ListModel>> response = new NewResultResponse<>();
+        PageInfo<${module}ListModel> pageInfo = ${moduleLittle}Service.getList(request);
+        response.setDatas(pageInfo);
+        return response;
+    }
+
+    @Override
+    public ResultResponse delete(@RequestBody ${module}GetRequest request) {
+        ResultResponse response = new ResultResponse();
+        ${module} ${moduleLittle} = ${moduleLittle}Service.get(request.getId());
+        if (${moduleLittle} == null) {
+            response.resetError("数据不存在！");
+            return response;
+        }
+        ${module} updateEntity = new ${module}();
+        updateEntity.setId(${moduleLittle}.getId());
+        updateEntity.setDeleted((byte)1);
+        ${moduleLittle}Service.save${module}(updateEntity);
+        return response;
+    }
+
+
+
+}

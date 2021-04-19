@@ -1,0 +1,21 @@
+package com.kykj.tesla.mall.v2.request;
+
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import javax.validation.constraints.NotNull;
+
+/**
+ * ${module}详情 请求数据模型
+ */
+@Data
+public class ${module}GetRequest {
+
+    @ApiModelProperty("商户id")
+    private Long merchantId;
+
+    @ApiModelProperty("id")
+    @NotNull(message = "请选择id")
+    private Long id;
+
+}

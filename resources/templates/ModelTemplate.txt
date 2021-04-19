@@ -1,0 +1,28 @@
+package com.kykj.tesla.mall.v2.model;
+
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
+/**
+ *  ${module} 数据模型
+ * @author zheng.li
+ */
+@Data
+public class ${module}Model {
+
+    @ApiModelProperty("id")
+    private Long id;
+
+    @ApiModelProperty("商户id")
+    @NotNull(message = "商户id缺失")
+    private Long merchantId;
+
+    @ApiModelProperty("名称")
+    @NotNull(message = "名称不能为空")
+    private String name;
+
+
+}

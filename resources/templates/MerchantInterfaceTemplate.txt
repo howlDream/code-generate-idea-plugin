@@ -1,0 +1,65 @@
+package com.kykj.tesla.mall.v2;
+
+import com.github.pagehelper.PageInfo;
+import com.kykj.tesla.mall.v2.model.${module}ListModel;
+import com.kykj.tesla.mall.v2.model.${module}Model;
+import com.kykj.tesla.mall.v2.request.${module}GetRequest;
+import com.kykj.tesla.mall.v2.request.${module}ListRequest;
+import com.kykj.tesla.platform.service.response.NewResultResponse;
+import com.kykj.tesla.platform.service.response.ResultResponse;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+/**
+ * XX 后台接口
+ * @author zheng.li
+ */
+public interface ${module}MerchantInterface {
+
+    /**
+     * xx保存
+     * @param ${moduleLittle}Model ${module}Model
+     * @return ResultResponse
+     */
+    @ApiOperation("XX 保存")
+    @RequestMapping(value = "/api/${moduleLittle}/save",method = RequestMethod.POST)
+    ResultResponse save(@RequestBody ${module}Model ${moduleLittle}Model);
+
+    /**
+     * xx详情
+     * @param request ${module}GetRequest
+     * @return NewResultResponse<${module}Model>
+     */
+    @ApiOperation("XX 详情")
+    @RequestMapping(value = "/api/${moduleLittle}/get",method = RequestMethod.POST)
+    NewResultResponse<${module}Model> get(@RequestBody ${module}GetRequest request);
+
+
+
+    /**
+     * xx列表
+     * @param request ${module}Request
+     * @return  NewResultResponse<PageInfo<${module}ListModel>>
+     */
+    @ApiOperation("XX 列表")
+    @RequestMapping(value = "/api/${moduleLittle}/list",method = RequestMethod.POST)
+    NewResultResponse<PageInfo<${module}ListModel>> pageList(@RequestBody ${module}ListRequest request);
+
+
+    /**
+     * xx 删除
+     * @param request ${module}GetRequest
+     * @return ResultResponse
+     */
+    @ApiOperation("XX 删除")
+    @RequestMapping(value = "/api/${moduleLittle}/delete",method = RequestMethod.POST)
+    ResultResponse delete(@RequestBody ${module}GetRequest request);
+
+
+
+
+
+
+}

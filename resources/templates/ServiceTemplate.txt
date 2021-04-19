@@ -1,0 +1,37 @@
+package com.kykj.tesla.mall.service;
+
+import com.github.pagehelper.PageInfo;
+import com.kykj.tesla.mall.entity.${module};
+import org.springframework.stereotype.Service;
+import com.kykj.tesla.mall.v2.request.${module}ListRequest;
+import com.kykj.tesla.mall.v2.model.${module}ListModel;
+
+/**
+ * ${module}服务
+ * @author zheng.li
+ */
+@Service
+public interface ${module}Service {
+
+    /**
+     * 保存实体
+     * @param entity ${module}
+     */
+    void save${module}(${module} entity);
+
+    /**
+     * 获取实体
+     * @param id id
+     * @return  ${module}
+     */
+    ${module} get(Long id);
+
+     /**
+      * 分页列表 查询
+      * @param request ${module}Request
+      * @return PageInfo<${module}ListModel>
+     */
+    PageInfo<${module}ListModel> getList (${module}ListRequest request);
+
+
+}

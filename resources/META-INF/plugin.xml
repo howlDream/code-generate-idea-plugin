@@ -1,0 +1,38 @@
+<idea-plugin>
+  <id>com.code.generate.plugin.id</id>
+  <name>code-generate-idea</name>
+  <version>1.0</version>
+  <vendor email="xxxxxx@qq.com" url="http://xxxxxx@qq.com">zheng.li</vendor>
+
+
+  <description>
+    <![CDATA[
+      This is a project to generate code for java file.<br>
+      <em>zheng.li</em>
+    ]]>
+    </description>
+
+  <change-notes><![CDATA[
+      first version no changes notes.<br>
+      <em>zheng.li</em>
+    ]]>
+  </change-notes>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="173.0"/>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <depends>com.intellij.modules.platform</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Add your extensions here -->
+  </extensions>
+
+  <actions>
+    <!-- Add your actions here -->
+    <action id="idea.action.ProjectTemplateAction" class="idea.action.ProjectTemplateAction" text="代码文件生成" icon="/images/auto.png" description="CodeGenerate">
+        <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+    </action>
+  </actions>
+</idea-plugin>

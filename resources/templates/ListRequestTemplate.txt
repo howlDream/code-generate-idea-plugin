@@ -1,0 +1,25 @@
+package com.kykj.tesla.mall.v2.request;
+
+import com.kykj.tesla.rate.service.centerPlatform.rate.request.PageRequest;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.util.List;
+
+/**
+ * ${module}列表
+ */
+@Data
+public class ${module}ListRequest extends PageRequest {
+
+    @ApiModelProperty("名称")
+    private String name;
+
+    @ApiModelProperty("商户id")
+    private Long merchantId;
+
+    @ApiModelProperty("全域商户id")
+    private List<Long> merchantIds;
+
+
+}

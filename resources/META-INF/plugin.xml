@@ -31,7 +31,7 @@
 
   <actions>
     <!-- Add your actions here -->
-    <action id="idea.action.ProjectTemplateAction" class="idea.action.ProjectTemplateAction" text="代码文件生成" icon="/images/auto.png" description="CodeGenerate">
+    <action id="idea.action.ProjectTemplateAction" class="idea.action.ProjectTemplateAction" text="代码文件生成" icon="/images/flower.png" description="CodeGenerate">
         <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
     </action>
   </actions>

@@ -1,15 +1,15 @@
-package com.kykj.tesla.mall.controller;
+package ${path};
 
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.github.pagehelper.PageInfo;
-import com.kykj.tesla.mall.entity.${module};
-import com.kykj.tesla.mall.service.${module}Service;
-import com.kykj.tesla.mall.v2.${module}MerchantInterface;
-import com.kykj.tesla.mall.v2.model.${module}ListModel;
-import com.kykj.tesla.mall.v2.model.${module}Model;
-import com.kykj.tesla.mall.v2.request.${module}GetRequest;
-import com.kykj.tesla.mall.v2.request.${module}ListRequest;
+import ${entityPath}.${module};
+import ${servicePath}.${module}Service;
+import ${interfacePath}.${module}MerchantInterface;
+import ${modelPath}.${module}ListModel;
+import ${modelPath}.${module}Model;
+import ${requestPath}.${module}GetRequest;
+import ${requestPath}.${module}ListRequest;
 import com.kykj.tesla.platform.service.response.NewResultResponse;
 import com.kykj.tesla.platform.service.response.ResultResponse;
 import lombok.extern.slf4j.Slf4j;

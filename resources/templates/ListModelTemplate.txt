@@ -1,4 +1,4 @@
-package com.kykj.tesla.mall.v2.model;
+package ${path};
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

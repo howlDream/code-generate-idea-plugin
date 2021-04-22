@@ -2,6 +2,7 @@ package idea.template;
 
 import idea.exception.MyException;
 import idea.log.ErrorLogs;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
@@ -64,7 +65,7 @@ public class CodeTemplateUtils {
      */
     public static void serviceCodeGenerate(String module,String moduleLittle) throws IOException, MyException {
         assert threadLocal != null;
-        codeGenerate(module,moduleLittle, SERVICE_TEMPLATE, threadLocal.get().servicePath,SystemConstance.SERVICE_SUFFIX);
+        codeGenerate(module,moduleLittle, SERVICE_TEMPLATE, threadLocal.get().servicePath,SystemConstance.SERVICE_SUFFIX, threadLocal.get().servicePath);
     }
 
     /**
@@ -74,7 +75,7 @@ public class CodeTemplateUtils {
      */
     public static void serviceImplCodeGenerate(String module,String moduleLittle) throws IOException, MyException {
         assert threadLocal != null;
-        codeGenerate(module,moduleLittle, SERVICE_IMPL_TEMPLATE,threadLocal.get().serviceImplPath,SystemConstance.SERVICE_IMPL_SUFFIX);
+        codeGenerate(module,moduleLittle, SERVICE_IMPL_TEMPLATE,threadLocal.get().serviceImplPath,SystemConstance.SERVICE_IMPL_SUFFIX, threadLocal.get().serviceImplPath);
     }
 
     /**
@@ -84,7 +85,7 @@ public class CodeTemplateUtils {
      */
     public static void interfaceCodeGenerate(String module,String moduleLittle) throws IOException, MyException {
         assert threadLocal != null;
-        codeGenerate(module,moduleLittle, INTERFACE_TEMPLATE,threadLocal.get().interfacePath,SystemConstance.INTERFACE_SUFFIX);
+        codeGenerate(module,moduleLittle, INTERFACE_TEMPLATE,threadLocal.get().interfacePath,SystemConstance.INTERFACE_SUFFIX, threadLocal.get().interfacePath);
     }
 
     /**
@@ -94,27 +95,27 @@ public class CodeTemplateUtils {
      */
     public static void controllerCodeGenerate(String module,String moduleLittle) throws IOException, MyException {
         assert threadLocal != null;
-        codeGenerate(module,moduleLittle, CONTROLLER_TEMPLATE,threadLocal.get().controllerPath,SystemConstance.CONTROLLER_SUFFIX);
+        codeGenerate(module,moduleLittle, CONTROLLER_TEMPLATE,threadLocal.get().controllerPath,SystemConstance.CONTROLLER_SUFFIX, threadLocal.get().controllerPath);
     }
 
     public static void getRequestCodeGenerate(String module,String moduleLittle) throws IOException, MyException {
         assert threadLocal != null;
-        codeGenerate(module,moduleLittle,GET_REQUEST_TEMPLATE,threadLocal.get().requestPath,SystemConstance.GET_REQUEST_SUFFIX);
+        codeGenerate(module,moduleLittle,GET_REQUEST_TEMPLATE,threadLocal.get().requestPath,SystemConstance.GET_REQUEST_SUFFIX, threadLocal.get().requestPath);
     }
 
     public static void listRequestCodeGenerate(String module, String moduleLittle) throws IOException, MyException {
         assert threadLocal != null;
-        codeGenerate(module,moduleLittle,REQUEST_TEMPLATE,threadLocal.get().requestPath,SystemConstance.LIST_REQUEST_SUFFIX);
+        codeGenerate(module,moduleLittle,REQUEST_TEMPLATE,threadLocal.get().requestPath,SystemConstance.LIST_REQUEST_SUFFIX, threadLocal.get().requestPath);
     }
 
     public static void modelCodeGenerate(String module,String moduleLittle) throws IOException, MyException {
         assert threadLocal != null;
-        codeGenerate(module,moduleLittle,MODEL_TEMPLATE,threadLocal.get().modelPath,SystemConstance.MODEL_SUFFIX);
+        codeGenerate(module,moduleLittle,MODEL_TEMPLATE,threadLocal.get().modelPath,SystemConstance.MODEL_SUFFIX,threadLocal.get().modelPath);
     }
 
     public static void listModelCodeGenerate(String module,String moduleLittle) throws IOException, MyException {
         assert threadLocal != null;
-        codeGenerate(module,moduleLittle,LIST_MODEL_TEMPLATE,threadLocal.get().modelPath,SystemConstance.LIST_MODEL_SUFFIX);
+        codeGenerate(module,moduleLittle,LIST_MODEL_TEMPLATE,threadLocal.get().modelPath,SystemConstance.LIST_MODEL_SUFFIX, threadLocal.get().modelPath);
     }
 
     /**
@@ -124,9 +125,10 @@ public class CodeTemplateUtils {
      * @param templatePath 模板路径
      * @param filePath 生成文件路径
      * @param fileSuffix 生成文件名后缀
+     * @param packagePath 包路径
      * @throws IOException IOException
      */
-    public static void codeGenerate(String module,String moduleLittle,String templatePath,String filePath,String fileSuffix) throws IOException, MyException {
+    public static void codeGenerate(String module, String moduleLittle, String templatePath, String filePath, String fileSuffix, String packagePath) throws IOException, MyException {
 
         // 1.将模版以文件的形式读入
 
@@ -166,6 +168,14 @@ public class CodeTemplateUtils {
         Map<String, Object> param = new HashMap<>(16);
         param.put("module", module);
         param.put("moduleLittle",moduleLittle);
+        param.put("path",filePathToPackagePath(packagePath));
+        param.put("entityPath",filePathToPackagePath(threadLocal.get().entityPath));
+        param.put("mapperPath",filePathToPackagePath(threadLocal.get().mapperPath));
+        param.put("servicePath",filePathToPackagePath(threadLocal.get().servicePath));
+        param.put("modelPath",filePathToPackagePath(threadLocal.get().modelPath));
+        param.put("requestPath",filePathToPackagePath(threadLocal.get().requestPath));
+        param.put("interfacePath",filePathToPackagePath(threadLocal.get().interfacePath));
+        param.put("controllerPath",filePathToPackagePath(threadLocal.get().controllerPath));
         /*
             velocity 引擎启动之后，其尝试将日志文件写入tomcat所在目录文件中去，
             所以可以强制将日志写入tomcat标准日志中去，要做到这样就是以下所配置的属性
@@ -204,6 +214,28 @@ public class CodeTemplateUtils {
         }
     }
 
+    /**
+     * 将文件路径 转换为 包路径
+     * @param filePath 文件路径
+     * @return 包路径
+     */
+    private static String filePathToPackagePath(String filePath) {
+        if (StringUtils.isEmpty(filePath)) {
+            return "";
+        }
+        String[] chars = filePath.split("/");
+        int index = 0;
+        StringBuilder packageSb = new StringBuilder();
+        for (int i = 0; i < chars.length; i++) {
+            if ("com".equals(chars[i])) {
+                index = i;
+                packageSb.append(chars[i]);
+            } else if (index > 0) {
+                packageSb.append(".").append(chars[i]);
+            }
+        }
+        return packageSb.toString();
+    }
 
 
     public static void main (String[] args) throws IOException, MyException {

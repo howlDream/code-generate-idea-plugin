@@ -40,6 +40,15 @@ public class ProjectPaths {
      * 当前项目model文件目录
      */
     public String modelPath;
+    /**
+     * 实体文件目录
+     */
+    public String entityPath;
+
+    /**
+     * mapper文件目录
+     */
+    public String mapperPath;
 
     public static final String MALL = "mall";
 
@@ -53,13 +62,15 @@ public class ProjectPaths {
         this.servicePath = path + "/" + moduleName + "-service-spring-boot/src/main/java/com/kykj/tesla/"+ moduleName + "/service/";
         this.serviceImplPath = this.servicePath + "impl/";
         if (!MALL.equals(moduleName)) {
-            this.interfacePath = path + "/" + moduleName + "-service-interface/src/main/java/com/kykj/tesla/"+ moduleName + "/";
+            this.interfacePath = path + "/" + moduleName + "-service-interface/src/main/java/com/kykj/tesla/"+ moduleName + "/service/";
         } else {
             this.interfacePath = path + "/" + moduleName + "-service-interface/src/main/java/com/kykj/tesla/"+ moduleName + "/v2/";
         }
         this.modelPath = this.interfacePath + "model/";
         this.requestPath = this.interfacePath + "request/";
         this.controllerPath = path + "/" + moduleName + "-service-spring-boot/src/main/java/com/kykj/tesla/"+ moduleName + "/controller/";
+        this.entityPath = path + "/" + moduleName + "-service-spring-boot/src/main/java/com/kykj/tesla/"+ moduleName + "/entity/";
+        this.mapperPath = path + "/" + moduleName + "-service-spring-boot/src/main/java/com/kykj/tesla/"+ moduleName + "/mapper/dao/";
     }
 
     /**
@@ -72,18 +83,20 @@ public class ProjectPaths {
         try {
             pathFieldList.forEach(e -> {
                 String filePath = path + "/" + e.getText() + "/";
-                if ("service".equals(e.getName())) {
+                if (PathTypeEnum.SERVICE.getName().equals(e.getName())) {
                     this.servicePath = filePath;
-                } else if ("request".equals(e.getName())) {
+                } else if (PathTypeEnum.REQUEST.getName().equals(e.getName())) {
                     this.requestPath = filePath;
-                } else if ("model".equals(e.getName())) {
+                } else if (PathTypeEnum.MODEL.getName().equals(e.getName())) {
                     this.modelPath = filePath;
-                } else if ("interface".equals(e.getName())) {
+                } else if (PathTypeEnum.MODEL.getName().equals(e.getName())) {
                     this.interfacePath = path;
-                } else if ("controller".equals(e.getName())) {
+                } else if (PathTypeEnum.CONTROLLER.getName().equals(e.getName())) {
                     this.controllerPath = path;
                 }
             });
+            this.entityPath = this.modelPath;
+            this.mapperPath = this.modelPath;
         } catch (Exception e) {
             throw new MyException("路径读取失败");
         }

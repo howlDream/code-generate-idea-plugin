@@ -1,10 +1,10 @@
-package com.kykj.tesla.mall.v2;
+package ${path};
 
 import com.github.pagehelper.PageInfo;
-import com.kykj.tesla.mall.v2.model.${module}ListModel;
-import com.kykj.tesla.mall.v2.model.${module}Model;
-import com.kykj.tesla.mall.v2.request.${module}GetRequest;
-import com.kykj.tesla.mall.v2.request.${module}ListRequest;
+import ${modelPath}.${module}ListModel;
+import ${modelPath}.${module}Model;
+import ${requestPath}.${module}GetRequest;
+import ${requestPath}.${module}ListRequest;
 import com.kykj.tesla.platform.service.response.NewResultResponse;
 import com.kykj.tesla.platform.service.response.ResultResponse;
 import io.swagger.annotations.ApiOperation;

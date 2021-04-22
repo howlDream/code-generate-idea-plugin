@@ -152,6 +152,7 @@ public class FrameUi extends JFrame {
                 switch (boxEnum) {
                     case SERVICE:
                         CodeTemplateUtils.serviceCodeGenerate(module,moduleLittle);
+                        CodeTemplateUtils.serviceImplCodeGenerate(module,moduleLittle);
                         break;
                     case GET_MODEL:
                         CodeTemplateUtils.modelCodeGenerate(module,moduleLittle);

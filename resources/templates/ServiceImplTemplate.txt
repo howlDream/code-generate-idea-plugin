@@ -1,16 +1,16 @@
-package com.kykj.tesla.mall.service.impl;
+package ${path};
 
 import lombok.extern.slf4j.Slf4j;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.kykj.tesla.mall.service.${module}Service;
-import com.kykj.tesla.mall.mapper.dao.${module}Mapper;
-import com.kykj.tesla.mall.entity.${module};
-import com.kykj.tesla.mall.entity.${module}Example;
-import com.kykj.tesla.mall.v2.request.${module}ListRequest;
-import com.kykj.tesla.mall.v2.model.${module}ListModel;
+import ${servicePath}.${module}Service;
+import ${mapperPath}.${module}Mapper;
+import ${entityPath}.${module};
+import ${entityPath}.${module}Example;
+import ${requestPath}.${module}ListRequest;
+import ${modelPath}.${module}ListModel;
 
 import com.planck.corona.common.exception.BaseException;
 import java.util.ArrayList;

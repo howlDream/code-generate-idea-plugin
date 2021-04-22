@@ -52,6 +52,8 @@ public class ProjectPaths {
 
     public static final String MALL = "mall";
 
+    public static final String RESTAURANT = "restaurant";
+
     /**
      * 无配置路径时构造方法
      * @param path 根路径
@@ -61,10 +63,12 @@ public class ProjectPaths {
         String moduleName = getModuleName(path);
         this.servicePath = path + "/" + moduleName + "-service-spring-boot/src/main/java/com/kykj/tesla/"+ moduleName + "/service/";
         this.serviceImplPath = this.servicePath + "impl/";
-        if (!MALL.equals(moduleName)) {
-            this.interfacePath = path + "/" + moduleName + "-service-interface/src/main/java/com/kykj/tesla/"+ moduleName + "/service/";
-        } else {
+        if (RESTAURANT.equals(moduleName)) {
+            this.interfacePath = path + "/" + moduleName + "-service-interface/src/main/java/com/kykj/"+ moduleName + "/service/";
+        } else if (MALL.equals(moduleName)){
             this.interfacePath = path + "/" + moduleName + "-service-interface/src/main/java/com/kykj/tesla/"+ moduleName + "/v2/";
+        } else {
+            this.interfacePath = path + "/" + moduleName + "-service-interface/src/main/java/com/kykj/tesla/"+ moduleName + "/service/";
         }
         this.modelPath = this.interfacePath + "model/";
         this.requestPath = this.interfacePath + "request/";

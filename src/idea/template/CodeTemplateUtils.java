@@ -219,7 +219,7 @@ public class CodeTemplateUtils {
      * @param filePath 文件路径
      * @return 包路径
      */
-    private static String filePathToPackagePath(String filePath) {
+    private static String filePathToPackagePath(String filePath) throws MyException {
         if (StringUtils.isEmpty(filePath)) {
             return "";
         }
@@ -233,6 +233,9 @@ public class CodeTemplateUtils {
             } else if (index > 0) {
                 packageSb.append(".").append(chars[i]);
             }
+        }
+        if ("".equals(packageSb.toString())) {
+            throw new MyException("基础包请以‘com’命名");
         }
         return packageSb.toString();
     }

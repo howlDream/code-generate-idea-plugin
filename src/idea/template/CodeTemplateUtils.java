@@ -237,6 +237,9 @@ public class CodeTemplateUtils {
         return packageSb.toString();
     }
 
+    public static void removeThreadLocal() {
+        threadLocal.remove();
+    }
 
     public static void main (String[] args) throws IOException, MyException {
 

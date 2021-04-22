@@ -31,10 +31,8 @@ import javax.swing.JTextField;
 public class FrameUi extends JFrame {
 
 
-    private AnActionEvent anActionEvent;
     private Project project;
     private VirtualFile file;
-    private JPanel contentPane = new JBPanel();
 
     private JTextField moduleField = new JTextField(10);
     private JTextField keyField = new JTextField(10);
@@ -58,8 +56,7 @@ public class FrameUi extends JFrame {
     private List<JCheckBox> boxList = Arrays.asList(serviceBox,getModelBox,getRequestBox,listModelBox,listRequestBox,interfaceBox);
 
     public FrameUi(AnActionEvent anActionEvent) throws HeadlessException {
-        this.anActionEvent = anActionEvent;
-        VirtualFile file = LangDataKeys.VIRTUAL_FILE.getData(this.anActionEvent.getDataContext());
+        VirtualFile file = LangDataKeys.VIRTUAL_FILE.getData(anActionEvent.getDataContext());
         assert file != null;
         this.file = file;
         this.project = anActionEvent.getData(PlatformDataKeys.PROJECT);
@@ -120,11 +117,12 @@ public class FrameUi extends JFrame {
         mainPanel.add(tablePanel);
         mainPanel.add(boxPanel);
         mainPanel.add(pathPanel);
-        this.contentPane.setBorder(JBUI.Borders.empty(5));
-        this.contentPane.setLayout(new BorderLayout());
-        this.contentPane.add(mainPanel, "Center");
-        this.contentPane.add(paneBottom, "South");
-        this.setContentPane(this.contentPane);
+        JPanel contentPane = new JBPanel();
+        contentPane.setBorder(JBUI.Borders.empty(5));
+        contentPane.setLayout(new BorderLayout());
+        contentPane.add(mainPanel, "Center");
+        contentPane.add(paneBottom, "South");
+        this.setContentPane(contentPane);
         buttonOk.addActionListener(e -> FrameUi.this.onOk());
         buttonCancel.addActionListener(e -> FrameUi.this.onCancel());
 
@@ -174,7 +172,8 @@ public class FrameUi extends JFrame {
                         break;
                 }
             }
-
+            // 移除当前threadLocal
+            CodeTemplateUtils.removeThreadLocal();
         } catch (IOException | MyException e) {
             ErrorLogs.getInstance().write(e.getMessage());
             ExceptionMessages.showError(project,e.getMessage());

@@ -34,7 +34,9 @@ public class ${module}ServiceImpl implements ${module}Service {
 
     @Override
     public void save${module}(${module} entity) {
-        if (entity == null) return;
+        if (entity == null) {
+            return;
+        }
         if (entity.getId() == null || entity.getId() == 0) {
             // 新增
             insert(entity);
@@ -76,7 +78,9 @@ public class ${module}ServiceImpl implements ${module}Service {
 
     @Override
     public ${module} get(Long id) {
-        if (id == null ) return null;
+        if (id == null ) {
+            return null;
+        }
         return ${moduleLittle}Mapper.selectByPrimaryKey(id);
     }
 

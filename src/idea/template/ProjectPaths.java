@@ -14,36 +14,36 @@ public class ProjectPaths {
     /**
      * 当前项目service文件目录
      */
-    public String servicePath;
+    public String servicePath = "com";
 
     /**
      * 当前项目service实现文件目录
      */
-    public String serviceImplPath;
+    public String serviceImplPath = "com";
 
     /**
      * 当前项目interface文件目录
      */
-    public String interfacePath;
+    public String interfacePath = "com";
 
     /**
      * 当前项目controller 文件目录
      */
-    public String controllerPath;
+    public String controllerPath = "com";
 
     /**
      * 当前项目request 文件目录
      */
-    public String requestPath;
+    public String requestPath = "com";
 
     /**
      * 当前项目model文件目录
      */
-    public String modelPath;
+    public String modelPath = "com";
     /**
      * 实体文件目录
      */
-    public String entityPath;
+    public String entityPath = "com";
 
     /**
      * mapper文件目录
@@ -86,9 +86,14 @@ public class ProjectPaths {
     public ProjectPaths(String path, List<JTextField> pathFieldList) throws MyException {
         try {
             pathFieldList.forEach(e -> {
+                if (e.getText() == null || "".equals(e.getText())) {
+                    return;
+                }
+                ErrorLogs.getInstance().write(e.getName() + ":" + e.getText());
                 String filePath = path + "/" + e.getText() + "/";
                 if (PathTypeEnum.SERVICE.getName().equals(e.getName())) {
                     this.servicePath = filePath;
+                    this.serviceImplPath = filePath + "/impl/";
                 } else if (PathTypeEnum.REQUEST.getName().equals(e.getName())) {
                     this.requestPath = filePath;
                 } else if (PathTypeEnum.MODEL.getName().equals(e.getName())) {

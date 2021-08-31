@@ -178,6 +178,9 @@ public class FrameUi extends JFrame {
             ErrorLogs.getInstance().write(e.getMessage());
             ExceptionMessages.showError(project,e.getMessage());
             return;
+        } finally {
+            // 移除当前threadLocal
+            CodeTemplateUtils.removeThreadLocal();
         }
         Messages.showMessageDialog(project,file.getPresentableUrl() + " 完成","结果",Messages.getInformationIcon());
     }

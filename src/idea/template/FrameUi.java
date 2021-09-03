@@ -172,8 +172,6 @@ public class FrameUi extends JFrame {
                         break;
                 }
             }
-            // 移除当前threadLocal
-            CodeTemplateUtils.removeThreadLocal();
         } catch (IOException | MyException e) {
             ErrorLogs.getInstance().write(e.getMessage());
             ExceptionMessages.showError(project,e.getMessage());

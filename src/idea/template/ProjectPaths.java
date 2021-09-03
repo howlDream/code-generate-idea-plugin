@@ -99,9 +99,9 @@ public class ProjectPaths {
                 } else if (PathTypeEnum.MODEL.getName().equals(e.getName())) {
                     this.modelPath = filePath;
                 } else if (PathTypeEnum.MODEL.getName().equals(e.getName())) {
-                    this.interfacePath = path;
+                    this.interfacePath = filePath;
                 } else if (PathTypeEnum.CONTROLLER.getName().equals(e.getName())) {
-                    this.controllerPath = path;
+                    this.controllerPath = filePath;
                 }
             });
             this.entityPath = this.modelPath;

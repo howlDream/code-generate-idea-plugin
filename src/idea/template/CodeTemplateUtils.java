@@ -1,10 +1,13 @@
 package idea.template;
 
+import com.alibaba.fastjson.JSON;
 import idea.exception.MyException;
 import idea.log.ErrorLogs;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -220,6 +223,7 @@ public class CodeTemplateUtils {
      * @return 包路径
      */
     private static String filePathToPackagePath(String filePath) throws MyException {
+        ErrorLogs.getInstance().write("paths:" + JSON.toJSONString(threadLocal.get()));
         if (StringUtils.isEmpty(filePath)) {
             return "";
         }

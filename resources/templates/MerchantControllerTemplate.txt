@@ -10,8 +10,7 @@ import ${modelPath}.${module}ListModel;
 import ${modelPath}.${module}Model;
 import ${requestPath}.${module}GetRequest;
 import ${requestPath}.${module}ListRequest;
-import com.kykj.tesla.platform.service.response.NewResultResponse;
-import com.kykj.tesla.platform.service.response.ResultResponse;
+import com.planck.corona.common.response.BaseResultResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,15 +24,15 @@ import java.util.List;
 
 @RestController
 @Slf4j
-public class ${module}MerchantController implements ${module}MerchantInterface {
+public class ${module}Controller implements ${module}Interface {
 
     @Autowired
     private ${module}Service ${moduleLittle}Service;
 
 
     @Override
-    public ResultResponse save (@RequestBody @Valid ${module}Model ${moduleLittle}Model) {
-        ResultResponse response = new ResultResponse();
+    public BaseResultResponse<String> save (@RequestBody @Valid ${module}Model ${moduleLittle}Model) {
+        BaseResultResponse<String> response = new BaseResultResponse<>();
         ${module} entity = new ${module}();
         BeanUtil.copyProperties(${moduleLittle}Model,entity);
         ${moduleLittle}Service.save${module}(entity);
@@ -41,33 +40,33 @@ public class ${module}MerchantController implements ${module}MerchantInterface {
     }
 
     @Override
-    public NewResultResponse<${module}Model> get (@RequestBody @Valid ${module}GetRequest request) {
-        NewResultResponse<${module}Model> resultResponse = new NewResultResponse<>();
+    public BaseResultResponse<${module}Model> get (@RequestBody @Valid ${module}GetRequest request) {
+        BaseResultResponse<${module}Model> resultResponse = new BaseResultResponse<>();
         ${module} ${moduleLittle} = ${moduleLittle}Service.get(request.getId());
         if (${moduleLittle} == null) {
-            resultResponse.resetError("数据不存在！");
+            resultResponse.resetError("-1","数据不存在！");
             return resultResponse;
         }
         ${module}Model ${moduleLittle}Model = new ${module}Model();
         BeanUtil.copyProperties(${moduleLittle},${moduleLittle}Model);
-        resultResponse.setDatas(${moduleLittle}Model);
+        resultResponse.setData(${moduleLittle}Model);
         return resultResponse;
     }
 
     @Override
-    public NewResultResponse<PageInfo<${module}ListModel>> pageList(@RequestBody ${module}ListRequest request) {
-        NewResultResponse<PageInfo<${module}ListModel>> response = new NewResultResponse<>();
+    public BaseResultResponse<PageInfo<${module}ListModel>> pageList(@RequestBody ${module}ListRequest request) {
+        BaseResultResponse<PageInfo<${module}ListModel>> response = new BaseResultResponse<>();
         PageInfo<${module}ListModel> pageInfo = ${moduleLittle}Service.getList(request);
         response.setDatas(pageInfo);
         return response;
     }
 
     @Override
-    public ResultResponse delete(@RequestBody ${module}GetRequest request) {
-        ResultResponse response = new ResultResponse();
+    public BaseResultResponse<String> delete(@RequestBody ${module}GetRequest request) {
+        BaseResultResponse<String> response = new BaseResultResponse<>();
         ${module} ${moduleLittle} = ${moduleLittle}Service.get(request.getId());
         if (${moduleLittle} == null) {
-            response.resetError("数据不存在！");
+            response.resetError("-1","数据不存在！");
             return response;
         }
         ${module} updateEntity = new ${module}();

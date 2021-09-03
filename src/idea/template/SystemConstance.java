@@ -22,13 +22,13 @@ public class SystemConstance {
     /**
      * interface 文件后缀
      */
-    public static final String INTERFACE_SUFFIX = "MerchantInterface.java";
+    public static final String INTERFACE_SUFFIX = "Interface.java";
 
 
     /**
      * controller 文件后缀
      */
-    public static final String CONTROLLER_SUFFIX = "MerchantController.java";
+    public static final String CONTROLLER_SUFFIX = "Controller.java";
 
 
     /**

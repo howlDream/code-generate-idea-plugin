@@ -93,7 +93,7 @@ public class ProjectPaths {
                 String filePath = path + "/" + e.getText() + "/";
                 if (PathTypeEnum.SERVICE.getName().equals(e.getName())) {
                     this.servicePath = filePath;
-                    this.serviceImplPath = filePath + "/impl/";
+                    this.serviceImplPath = filePath + "impl/";
                 } else if (PathTypeEnum.REQUEST.getName().equals(e.getName())) {
                     this.requestPath = filePath;
                 } else if (PathTypeEnum.MODEL.getName().equals(e.getName())) {

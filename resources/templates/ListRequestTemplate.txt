@@ -22,10 +22,10 @@ public class ${module}ListRequest {
     private List<Long> merchantIds;
 
     @ApiModelProperty("页码")
-    private Integer pageIndex;
+    private Integer pageIndex = 1;
 
     @ApiModelProperty("每页大小")
-    private Integer pageSize;
+    private Integer pageSize = 10;
 
 
 }

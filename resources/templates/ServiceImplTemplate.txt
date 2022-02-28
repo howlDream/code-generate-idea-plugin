@@ -85,12 +85,12 @@ public class ${module}ServiceImpl implements ${module}Service {
      * @return true/false
      */
     private boolean checkNameExists(${module} entity) {
-        if (entity.getName() == null || entity.getDeleted().equals((byte)1)) {
+        if (entity.getName() == null || (entity.getDeleted() != null && entity.getDeleted().equals((byte)1))) {
             return false;
         }
         ${module}Example example = new ${module}Example();
         ${module}Example.Criteria criteria = example.createCriteria();
-        criteria.andDeletedEqualTo((byte)0).andNameEqualTo(entity.getName());
+        criteria.andDeletedEqualTo((byte)0).andNameEqualTo(entity.getName()).andMerchantIdEqualTo(entity.getMerchantId());
         if (entity.getId() != null) {
             criteria.andIdNotEqualTo(entity.getId());
         }

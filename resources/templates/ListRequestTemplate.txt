@@ -10,7 +10,7 @@ import java.util.List;
  * @author zheng.li
  */
 @Data
-public class ${module}ListRequest extends PageRequest {
+public class ${module}ListRequest {
 
     @ApiModelProperty("名称")
     private String name;
@@ -20,6 +20,12 @@ public class ${module}ListRequest extends PageRequest {
 
     @ApiModelProperty("全域商户id")
     private List<Long> merchantIds;
+
+    @ApiModelProperty("页码")
+    private Integer pageIndex;
+
+    @ApiModelProperty("每页大小")
+    private Integer pageSize;
 
 
 }

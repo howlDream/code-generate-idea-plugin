@@ -37,6 +37,9 @@ public class ${module}ServiceImpl implements ${module}Service {
         if (entity == null) {
             return;
         }
+        if (checkNameExists(entity)) {
+            throw new BaseException("-1","该名称已存在！");
+        }
         if (entity.getId() == null || entity.getId() == 0) {
             // 新增
             insert(entity);
@@ -74,6 +77,24 @@ public class ${module}ServiceImpl implements ${module}Service {
             log.error("更新${module}失败",e);
             throw new BaseException("-1","数据库保存失败！");
         }
+    }
+
+    /**
+     * 校验名称是否已存在
+     * @param entity 实体
+     * @return true/false
+     */
+    private boolean checkNameExists(${module} entity) {
+        if (entity.getName() == null || entity.getDeleted().equals((byte)1)) {
+            return false;
+        }
+        ${module}Example example = new ${module}Example();
+        ${module}Example.Criteria criteria = example.createCriteria();
+        criteria.andDeletedEqualTo((byte)0).andNameEqualTo(entity.getName());
+        if (entity.getId() != null) {
+            criteria.andIdNotEqualTo(entity.getId());
+        }
+        return ${moduleLittle}Mapper.countByExample(example) > 0;
     }
 
     @Override

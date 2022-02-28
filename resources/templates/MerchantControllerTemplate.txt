@@ -1,11 +1,10 @@
 package ${path};
 
 import cn.hutool.core.bean.BeanUtil;
-import com.alibaba.fastjson.JSONArray;
 import com.github.pagehelper.PageInfo;
 import ${entityPath}.${module};
 import ${servicePath}.${module}Service;
-import ${interfacePath}.${module}MerchantInterface;
+import ${interfacePath}.${module}Interface;
 import ${modelPath}.${module}ListModel;
 import ${modelPath}.${module}Model;
 import ${requestPath}.${module}GetRequest;
@@ -17,10 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @RestController
 @Slf4j
@@ -57,7 +52,7 @@ public class ${module}Controller implements ${module}Interface {
     public BaseResultResponse<PageInfo<${module}ListModel>> pageList(@RequestBody ${module}ListRequest request) {
         BaseResultResponse<PageInfo<${module}ListModel>> response = new BaseResultResponse<>();
         PageInfo<${module}ListModel> pageInfo = ${moduleLittle}Service.getList(request);
-        response.setDatas(pageInfo);
+        response.setData(pageInfo);
         return response;
     }
 

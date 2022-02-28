@@ -33,7 +33,7 @@ public class MyClassLoader extends ClassLoader {
      */
     private byte[] getClassData(String path){
         try (InputStream in = new FileInputStream(path);
-             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             int bufferSize = 4096;
             byte[] buffer = new byte[bufferSize];
             int byteNumRead;
@@ -45,4 +45,36 @@ public class MyClassLoader extends ClassLoader {
             return null;
         }
     }
+
+    /**
+     * 放开defineClass权限
+     * @param name
+     * @param b
+     * @param off
+     * @param len
+     * @return
+     */
+    public Class<?> defineClass1(String name, byte[] b, int off, int len) {
+        return defineClass(name,b,off,len);
+    }
+
+    /**
+     * 从输入流获取类数据
+     * @param in InputStream
+     * @return byte[]
+     */
+    public static byte[] getClassData(InputStream in) {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                int bufferSize = 4096;
+                byte[] buffer = new byte[bufferSize];
+                int byteNumRead;
+                while ((byteNumRead = in.read(buffer)) != -1) {
+                    baos.write(buffer,0,byteNumRead);
+                }
+                return baos.toByteArray();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 }

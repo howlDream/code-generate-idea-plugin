@@ -1,5 +1,6 @@
 package idea.fake;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -19,7 +20,7 @@ public class FakeLocalDate implements JsonFakeValuesService {
 
     @Override
     public Object randomValue(String valueName) {
-        return new Date();
+        return formatter.format(LocalDate.now());
     }
 
 }

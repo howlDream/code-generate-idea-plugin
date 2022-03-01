@@ -24,6 +24,12 @@ public class FakeInteger implements JsonFakeValuesService {
         if ("pageSize".equals(valueName)) {
             return 10;
         }
+        if ("merchantId".equals(valueName)) {
+            return 87;
+        }
+        if ("id".equals(valueName)) {
+            return 1;
+        }
         return 0;
     }
 }

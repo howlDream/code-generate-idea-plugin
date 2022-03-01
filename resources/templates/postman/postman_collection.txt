@@ -1,40 +1,88 @@
 {
-	"info": {
-		"_postman_id": ${randomId},
-		"name": ${fileName},
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "localhost:${port}${apiPath}",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "${requestData}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "localhost:${port}${apiPath}",
-					"host": [
-						"localhost"
-					],
-					"port": ${port},
-					"path": [
-						"api",
-						"distributor",
-						"ware",
-						"distribute",
-						"mall"
-					]
-				}
-			},
-			"response": []
-		}
-	]
+    "info":{
+        "_postman_id":"-9140692911779732225AUTO",
+        "name":"ZhihuijingquLeaseDriverInterface",
+        "schema":"https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item":[
+        {
+            "name":"ZhihuijingquLeaseDriverInterface",
+            "item":[
+                {
+                    "name":"localhost:6401/openapi/unauth/web/zhihuijingqu/lease/driver/delete",
+                    "request":{
+                        "method":"POST",
+                        "header":[
+
+                        ],
+                        "body":{
+                            "mode":"raw",
+                            "raw":"{\"id\":0}",
+                            "options":{
+                                "raw":{
+                                    "language":"json"
+                                }
+                            }
+                        },
+                        "url":{
+                            "raw":"localhost:6401/openapi/unauth/web/zhihuijingqu/lease/driver/delete",
+                            "host":[
+                                "localhost"
+                            ],
+                            "port":6401,
+                            "path":[
+                                "openapi",
+                                "unauth",
+                                "web",
+                                "zhihuijingqu",
+                                "lease",
+                                "driver",
+                                "delete"
+                            ]
+                        }
+                    },
+                    "response":[
+
+                    ]
+                },
+                {
+                    "name":"localhost:6401/openapi/unauth/web/zhihuijingqu/lease/driver/get",
+                    "request":{
+                        "method":"POST",
+                        "header":[
+
+                        ],
+                        "body":{
+                            "mode":"raw",
+                            "raw":"{\"id\":0}",
+                            "options":{
+                                "raw":{
+                                    "language":"json"
+                                }
+                            }
+                        },
+                        "url":{
+                            "raw":"localhost:6401/openapi/unauth/web/zhihuijingqu/lease/driver/get",
+                            "host":[
+                                "localhost"
+                            ],
+                            "port":6401,
+                            "path":[
+                                "openapi",
+                                "unauth",
+                                "web",
+                                "zhihuijingqu",
+                                "lease",
+                                "driver",
+                                "get"
+                            ]
+                        }
+                    },
+                    "response":[
+
+                    ]
+                }
+            ]
+        }
+    ]
 }

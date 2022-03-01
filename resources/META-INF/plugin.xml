@@ -34,7 +34,7 @@
     <action id="idea.action.ProjectTemplateAction" class="idea.action.ProjectTemplateAction" text="代码文件生成" icon="/images/flower.png" description="CodeGenerate">
         <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
     </action>
-    <action id="idea.action.CreatePostManFileAction" class="idea.action.CreatePostManFileAction" text="postman生成">
+    <action id="idea.action.CreatePostManFileAction" class="idea.action.CreatePostManFileAction" icon="/images/postman.png" text="Postman生成">
       <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="REST"/>
     </action>
   </actions>

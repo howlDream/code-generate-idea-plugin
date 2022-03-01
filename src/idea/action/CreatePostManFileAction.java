@@ -87,13 +87,13 @@ public class CreatePostManFileAction extends AnAction {
      * 替换：postmanId,名称
      */
     private static String POSTMAN_INFO_START = "{\"info\":{\"_postman_id\":\"%s\",\"name\":\"%s\",\"schema\":\"https://schema.getpostman.com/json/collection/v2.1.0/collection.json\"},";
-    private static String POSTMAN_ITEM_START = "\"item\": [";
+    private static String POSTMAN_ITEM_START = "\"item\":[{\"name\":\"%s\",\"item\":[";
     /**
      * item主题
      * 替换：接口地址，raw，接口地址，port,path
      */
     private static String POSTMAN_ITEM = "{\"name\":\"localhost:%s\",\"request\":{\"method\":\"POST\",\"header\":[],\"body\":{\"mode\":\"raw\",\"raw\":%s,\"options\":{\"raw\":{\"language\":\"json\"}}},\"url\":{\"raw\":\"localhost:%s\",\"host\":[\"localhost\"],\"port\":%s,\"path\":[%s]}},\"response\":[]}";
-    private static String POSTMAN_ITEM_END = "]";
+    private static String POSTMAN_ITEM_END = "]}]";
     private static String POSTMAN_INFO_END = "}";
 
 
@@ -139,9 +139,10 @@ public class CreatePostManFileAction extends AnAction {
      */
     private static void generatePostmanFile(Map<String, Object> kv,String fileName,String port) throws IOException, MyException {
         Random random = new Random(System.currentTimeMillis());
+        fileName = fileName.replace(".java","");
         StringBuilder infoStart = new StringBuilder(String.format(POSTMAN_INFO_START, random.nextLong() + "AUTO", fileName));
         // item拼凑
-        infoStart.append(POSTMAN_ITEM_START);
+        infoStart.append(String.format(POSTMAN_ITEM_START,fileName));
         for (Map.Entry<String, Object> entry : kv.entrySet()) {
             String apiPath = port + entry.getKey();
             String raw = JSON.toJSONString(entry.getValue());
@@ -162,7 +163,7 @@ public class CreatePostManFileAction extends AnAction {
         infoStart.deleteCharAt(infoStart.length() - 1);
         infoStart.append(POSTMAN_ITEM_END).append(POSTMAN_INFO_END);
         String content = infoStart.toString();
-        File outFile = new File(BaseLogs.LOG_PATH + "/collection-" + fileName.replace(".java","") + ".json");
+        File outFile = new File(BaseLogs.LOG_PATH + "/collection-" + fileName + ".json");
         if (!outFile.exists()) {
             boolean isOut = outFile.createNewFile();
             if (!isOut) {
@@ -348,11 +349,11 @@ public class CreatePostManFileAction extends AnAction {
     }
 
     public static void main(String[] args) {
-//        System.out.println(String.format(POSTMAN_INFO_START,"q1231231","测试") + POSTMAN_ITEM_START
-//                + String.format(POSTMAN_ITEM,"6012/api/test/test","{\"myDistributorInfoId\":1}","6012/api/test/test","\"test\",\"test\"")
-//                + POSTMAN_ITEM_END
-//                + POSTMAN_INFO_END
-//        );
+        System.out.println(String.format(POSTMAN_INFO_START,"q1231231","测试") + POSTMAN_ITEM_START
+                + String.format(POSTMAN_ITEM,"6012/api/test/test","{\"myDistributorInfoId\":1}","6012/api/test/test","\"test\",\"test\"")
+                + POSTMAN_ITEM_END
+                + POSTMAN_INFO_END
+        );
         try {
             Map<String,Object> map = new HashMap<>();
             Map<String,Object> valueMap = new HashMap<>();

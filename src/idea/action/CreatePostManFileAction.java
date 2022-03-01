@@ -30,18 +30,27 @@ import idea.fake.FakeLocalDate;
 import idea.fake.FakeLocalDateTime;
 import idea.fake.FakeString;
 import idea.fake.JsonFakeValuesService;
+import idea.log.BaseLogs;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.uast.UClass;
 import org.jetbrains.uast.UastUtils;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -61,7 +70,6 @@ public class CreatePostManFileAction extends AnAction {
     {
         FakeDecimal fakeDecimal = new FakeDecimal();
         FakeLocalDateTime fakeLocalDateTime = new FakeLocalDateTime();
-
         normalTypes.put("Boolean", new FakeBoolean());
         normalTypes.put("Float", fakeDecimal);
         normalTypes.put("Double", fakeDecimal);
@@ -70,21 +78,32 @@ public class CreatePostManFileAction extends AnAction {
         normalTypes.put("Character", new FakeChar());
         normalTypes.put("CharSequence", new FakeString());
         normalTypes.put("Date", fakeLocalDateTime);
-//        normalTypes.put("Temporal", new FakeTemporal());
         normalTypes.put("LocalDateTime", fakeLocalDateTime);
         normalTypes.put("LocalDate", new FakeLocalDate());
-//        normalTypes.put("LocalTime", new FakeLocalTime());
-//        normalTypes.put("ZonedDateTime", new FakeZonedDateTime());
-//        normalTypes.put("YearMonth", new FakeYearMonth());
-//        normalTypes.put("UUID", new FakeUUID());
     }
+
+    /**
+     * info
+     * 替换：postmanId,名称
+     */
+    private static String POSTMAN_INFO_START = "{\"info\":{\"_postman_id\":\"%s\",\"name\":\"%s\",\"schema\":\"https://schema.getpostman.com/json/collection/v2.1.0/collection.json\"},";
+    private static String POSTMAN_ITEM_START = "\"item\": [";
+    /**
+     * item主题
+     * 替换：接口地址，raw，接口地址，port,path
+     */
+    private static String POSTMAN_ITEM = "{\"name\":\"localhost:%s\",\"request\":{\"method\":\"POST\",\"header\":[],\"body\":{\"mode\":\"raw\",\"raw\":%s,\"options\":{\"raw\":{\"language\":\"json\"}}},\"url\":{\"raw\":\"localhost:%s\",\"host\":[\"localhost\"],\"port\":%s,\"path\":[%s]}},\"response\":[]}";
+    private static String POSTMAN_ITEM_END = "]";
+    private static String POSTMAN_INFO_END = "}";
+
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
         VirtualFile file = DataKeys.VIRTUAL_FILE.getData(event.getDataContext());
         assert file != null;
-        // 获取文件路径
-        String path = file.getPresentableUrl();
+        // 获取文件名
+        String fileName = file.getName();
+        // 检验文件
         final PsiFile psiFile = event.getData(CommonDataKeys.PSI_FILE);
         assert psiFile != null;
         final String fileText = psiFile.getText();
@@ -93,21 +112,79 @@ public class CreatePostManFileAction extends AnAction {
             ExceptionMessages.showError(event.getProject(),"Can't find interface or class scope！");
             return;
         }
-
+        String port = Messages.showInputDialog(event.getProject(), "port（eg:6023,6038）", "Input Service Port", Messages.getQuestionIcon());
+        if (port == null) {
+            return;
+        }
         PsiElement elementAt = psiFile.findElementAt(offset);
         // ADAPTS to all JVM platform languages
         UClass uClass = UastUtils.findContaining(elementAt, UClass.class);
         assert uClass != null;
         try {
             Map<String, Object> kv = parseClass(uClass.getJavaPsi(), event);
-            String set = JSON.toJSONString(kv.entrySet());
-            Messages.showMessageDialog(event.getProject(),set,"INFO",Messages.getInformationIcon());
+            // 生成文件
+            generatePostmanFile(kv,fileName,port);
+            Messages.showMessageDialog(event.getProject(),"路径：" + BaseLogs.LOG_PATH + "/collection-" + fileName.replace(".java","") + ".json","INFO",Messages.getInformationIcon());
         } catch (MyException e) {
             ExceptionMessages.showError(event.getProject(),e.getMessage());
+        } catch (IOException e1) {
+            ExceptionMessages.showError(event.getProject(),e1.getLocalizedMessage());
         }
 
     }
 
+    /**
+     * 生成postman文件
+     * @param kv 接口和入参映射
+     */
+    private static void generatePostmanFile(Map<String, Object> kv,String fileName,String port) throws IOException, MyException {
+        Random random = new Random(System.currentTimeMillis());
+        StringBuilder infoStart = new StringBuilder(String.format(POSTMAN_INFO_START, random.nextLong() + "AUTO", fileName));
+        // item拼凑
+        infoStart.append(POSTMAN_ITEM_START);
+        for (Map.Entry<String, Object> entry : kv.entrySet()) {
+            String apiPath = port + entry.getKey();
+            String raw = JSON.toJSONString(entry.getValue());
+            // 添加转义字符
+            raw = "\"" + raw.replaceAll("\"", "\\\\\"") + "\"";
+            String[] pathArray = entry.getKey().split("/");
+            StringBuilder pathPart = new StringBuilder();
+            for (String s : pathArray) {
+                if ("\"".equals(s) || "".equals(s)) {
+                    continue;
+                }
+                pathPart.append("\"").append(s).append("\",");
+            }
+            pathPart.deleteCharAt(pathPart.length() - 1);
+            String item = String.format(POSTMAN_ITEM,apiPath,raw,apiPath,port,pathPart);
+            infoStart.append(item).append(",");
+        }
+        infoStart.deleteCharAt(infoStart.length() - 1);
+        infoStart.append(POSTMAN_ITEM_END).append(POSTMAN_INFO_END);
+        String content = infoStart.toString();
+        File outFile = new File(BaseLogs.LOG_PATH + "/collection-" + fileName.replace(".java","") + ".json");
+        if (!outFile.exists()) {
+            boolean isOut = outFile.createNewFile();
+            if (!isOut) {
+                throw new MyException("create file fail！");
+            }
+        }
+        Path outPath = Paths.get(outFile.getAbsolutePath());
+        // 将文件写入
+        try (BufferedWriter out = Files.newBufferedWriter(outPath)) {
+            out.write(content);
+        } catch (IOException e) {
+            throw new MyException("create file fail！");
+        }
+    }
+
+    /**
+     * 获取接口类的路径和入参映射
+     * @param psiClass 类数据
+     * @param event  event
+     * @return Map<String, Object>
+     * @throws MyException 异常
+     */
     private Map<String, Object> parseClass(PsiClass psiClass, AnActionEvent event) throws MyException {
         Map<String,Object> map = new HashMap<>(16);
         for (PsiMethod method : psiClass.getAllMethods()) {
@@ -119,16 +196,15 @@ public class CreatePostManFileAction extends AnAction {
                 Map<String,Object> requestMap = new HashMap<>();
                 for (PsiParameter parameter : method.getParameterList().getParameters()) {
                     // 获取入参类
-                    ExceptionMessages.showError(event.getProject(),parameter.getType().getCanonicalText());
+                    // ExceptionMessages.showError(event.getProject(),parameter.getType().getCanonicalText());
                     final PsiElement target =  Objects.requireNonNull(parameter.getTypeElement()).getInnermostComponentReferenceElement().resolve();
                     if (!(target instanceof PsiClass)) {
-                        ExceptionMessages.showError(event.getProject(),"不是类");
+                        ExceptionMessages.showError(event.getProject(),"not class");
                         continue;
                     }
                     final PsiClass targetClass = (PsiClass)target;
                     for (PsiField allField : targetClass.getAllFields()) {
-                        // Messages.showMessageDialog(event.getProject(),allField.getName(),"INFO",Messages.getInformationIcon());
-                        requestMap.put(allField.getName(),parseFieldValueType(allField.getType(),1,event));
+                        requestMap.put(allField.getName(),parseFieldValueType(allField.getType(),1,event,allField.getName()));
                     }
                 }
                 map.put(value,requestMap);
@@ -162,7 +238,15 @@ public class CreatePostManFileAction extends AnAction {
 
     }
 
-    private Object parseFieldValueType(PsiType type, int level,  AnActionEvent event) throws MyException {
+    /**
+     * 生成字段数据
+     * @param type 字段类型
+     * @param level 层级
+     * @param event event
+     * @return Object
+     * @throws MyException 异常
+     */
+    private Object parseFieldValueType(PsiType type, int level,  AnActionEvent event,String valueName) throws MyException {
 
         level = ++level;
 
@@ -172,14 +256,12 @@ public class CreatePostManFileAction extends AnAction {
 
         } else if (type instanceof PsiArrayType) {
             //array type
-
             PsiType deepType = type.getDeepComponentType();
-            Object obj = parseFieldValueType(deepType, level, event);
+            Object obj = parseFieldValueType(deepType, level, event,valueName);
             return obj != null ? Collections.singletonList(obj) : new ArrayList<>();
 
         } else {
             //reference Type
-
             PsiClass psiClass = PsiUtil.resolveClassInClassTypeOnly(type);
             if (psiClass == null) {
                 return new LinkedHashMap<>();
@@ -205,10 +287,11 @@ public class CreatePostManFileAction extends AnAction {
                     return typeName.substring(0, subEnd > 0 ? subEnd : typeName.length());
                 }).anyMatch(iterableTypes::contains);
 
-                if (iterable) {// Iterable
+                if (iterable) {
+                    // Iterable
 
                     PsiType deepType = PsiUtil.extractIterableTypeParameter(type, false);
-                    Object obj = parseFieldValueType(deepType, level, event);
+                    Object obj = parseFieldValueType(deepType, level, event,valueName);
                     return obj != null ? Collections.singletonList(obj) : new ArrayList<>();
 
                 } else { // Object
@@ -216,7 +299,7 @@ public class CreatePostManFileAction extends AnAction {
                     List<String> retain = new ArrayList<>(fieldTypeNames);
                     retain.retainAll(normalTypes.keySet());
                     if (!retain.isEmpty()) {
-                        return this.getFakeValue(normalTypes.get(retain.get(0)));
+                        return this.getFakeValue(normalTypes.get(retain.get(0)),valueName);
                     } else {
 
                         if (level > 500) {
@@ -254,9 +337,32 @@ public class CreatePostManFileAction extends AnAction {
         }
     }
 
+    /**
+     * 获取相应类型的假数据
+     * @param jsonFakeValuesService  JsonFakeValuesService
+     * @param valueName 字段名
+     * @return Object
+     */
+    protected Object getFakeValue(JsonFakeValuesService jsonFakeValuesService,String valueName) {
+        return jsonFakeValuesService.randomValue(valueName);
+    }
 
-    protected Object getFakeValue(JsonFakeValuesService jsonFakeValuesService) {
-        return jsonFakeValuesService.def();
+    public static void main(String[] args) {
+//        System.out.println(String.format(POSTMAN_INFO_START,"q1231231","测试") + POSTMAN_ITEM_START
+//                + String.format(POSTMAN_ITEM,"6012/api/test/test","{\"myDistributorInfoId\":1}","6012/api/test/test","\"test\",\"test\"")
+//                + POSTMAN_ITEM_END
+//                + POSTMAN_INFO_END
+//        );
+        try {
+            Map<String,Object> map = new HashMap<>();
+            Map<String,Object> valueMap = new HashMap<>();
+            valueMap.put("id",1);
+            valueMap.put("name","232");
+            map.put("/api/test/test",valueMap);
+            generatePostmanFile(map,"file","1111");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

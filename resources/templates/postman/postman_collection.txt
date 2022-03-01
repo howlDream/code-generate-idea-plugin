@@ -1,0 +1,40 @@
+{
+	"info": {
+		"_postman_id": ${randomId},
+		"name": ${fileName},
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "localhost:${port}${apiPath}",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "${requestData}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:${port}${apiPath}",
+					"host": [
+						"localhost"
+					],
+					"port": ${port},
+					"path": [
+						"api",
+						"distributor",
+						"ware",
+						"distribute",
+						"mall"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

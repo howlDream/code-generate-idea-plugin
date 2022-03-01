@@ -11,4 +11,9 @@ public class FakeChar implements JsonFakeValuesService {
         return 'c';
     }
 
+    @Override
+    public Object randomValue(String valueName) {
+        return 'c';
+    }
+
 }

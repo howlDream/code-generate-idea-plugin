@@ -12,4 +12,9 @@ public class FakeString implements JsonFakeValuesService {
         return "";
     }
 
+    @Override
+    public Object randomValue(String valueName) {
+        return "";
+    }
+
 }

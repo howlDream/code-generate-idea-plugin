@@ -17,4 +17,9 @@ public class FakeBoolean implements JsonFakeValuesService {
             return false;
         }
 
+    @Override
+    public Object randomValue(String valueName) {
+        return false;
+    }
+
 }

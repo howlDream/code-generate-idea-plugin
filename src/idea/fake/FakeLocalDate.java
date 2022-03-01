@@ -17,4 +17,9 @@ public class FakeLocalDate implements JsonFakeValuesService {
         return new Date();
     }
 
+    @Override
+    public Object randomValue(String valueName) {
+        return new Date();
+    }
+
 }

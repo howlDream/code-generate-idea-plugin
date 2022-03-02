@@ -19,6 +19,7 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiPrimitiveType;
 import com.intellij.psi.PsiType;
+import com.intellij.psi.impl.compiled.ClsClassImpl;
 import com.intellij.psi.util.PsiUtil;
 import idea.exception.ExceptionMessages;
 import idea.exception.MyException;
@@ -31,6 +32,7 @@ import idea.fake.FakeLocalDateTime;
 import idea.fake.FakeString;
 import idea.fake.JsonFakeValuesService;
 import idea.log.BaseLogs;
+import idea.log.ErrorLogs;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.uast.UClass;
 import org.jetbrains.uast.UastUtils;
@@ -44,7 +46,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -121,7 +122,7 @@ public class CreatePostManFileAction extends AnAction {
         UClass uClass = UastUtils.findContaining(elementAt, UClass.class);
         assert uClass != null;
         try {
-            Map<String, Object> kv = parseClass(uClass.getJavaPsi(), event);
+            Map<String, Object> kv = parseInterface(uClass.getJavaPsi(), event);
             // 生成文件
             generatePostmanFile(kv,fileName,port);
             Messages.showMessageDialog(event.getProject(),"路径：" + BaseLogs.LOG_PATH + "/collection-" + fileName.replace(".java","") + ".json","INFO",Messages.getInformationIcon());
@@ -184,10 +185,9 @@ public class CreatePostManFileAction extends AnAction {
      * @param psiClass 类数据
      * @param event  event
      * @return Map<String, Object>
-     * @throws MyException 异常
      */
-    private Map<String, Object> parseClass(PsiClass psiClass, AnActionEvent event) throws MyException {
-        Map<String,Object> map = new HashMap<>(16);
+    private Map<String, Object> parseInterface(PsiClass psiClass, AnActionEvent event){
+        Map<String,Object> map = new LinkedHashMap<>(16);
         for (PsiMethod method : psiClass.getAllMethods()) {
             // 获取RequestMapping接口注解
             PsiAnnotation annotation  = method.getAnnotation("org.springframework.web.bind.annotation.RequestMapping");
@@ -197,16 +197,23 @@ public class CreatePostManFileAction extends AnAction {
                 Map<String,Object> requestMap = new HashMap<>();
                 for (PsiParameter parameter : method.getParameterList().getParameters()) {
                     // 获取入参类
-                    // ExceptionMessages.showError(event.getProject(),parameter.getType().getCanonicalText());
                     final PsiElement target =  Objects.requireNonNull(parameter.getTypeElement()).getInnermostComponentReferenceElement().resolve();
                     if (!(target instanceof PsiClass)) {
                         ExceptionMessages.showError(event.getProject(),"not class");
                         continue;
                     }
                     final PsiClass targetClass = (PsiClass)target;
+                    if (targetClass instanceof ClsClassImpl) {
+                        // 参数维java基本类型，非requestBody,封装后直接返回
+                        value += "?" + parameter.getName() + "=1";
+                        requestMap.put(parameter.getName(),1);
+                        map.put(value,requestMap);
+                        continue;
+                    }
                     for (PsiField allField : targetClass.getAllFields()) {
                         requestMap.put(allField.getName(),parseFieldValueType(allField.getType(),1,event,allField.getName()));
                     }
+
                 }
                 map.put(value,requestMap);
             }
@@ -245,9 +252,8 @@ public class CreatePostManFileAction extends AnAction {
      * @param level 层级
      * @param event event
      * @return Object
-     * @throws MyException 异常
      */
-    private Object parseFieldValueType(PsiType type, int level,  AnActionEvent event,String valueName) throws MyException {
+    private Object parseFieldValueType(PsiType type, int level,  AnActionEvent event,String valueName) {
 
         level = ++level;
 
@@ -267,7 +273,8 @@ public class CreatePostManFileAction extends AnAction {
             if (psiClass == null) {
                 return new LinkedHashMap<>();
             }
-            if (psiClass.isEnum()) { // enum
+            if (psiClass.isEnum()) {
+                // enum
                 for (PsiField field : psiClass.getFields()) {
                     if (field instanceof PsiEnumConstant) {
                         return field.getName();
@@ -275,7 +282,6 @@ public class CreatePostManFileAction extends AnAction {
                 }
                 return "";
             } else {
-
                 List<String> fieldTypeNames = new ArrayList<>();
 
                 fieldTypeNames.add(type.getPresentableText());
@@ -304,14 +310,28 @@ public class CreatePostManFileAction extends AnAction {
                     } else {
 
                         if (level > 500) {
-                            throw new MyException("This class reference level exceeds maximum limit or has nested references!");
+                            return null;
                         }
-
-                        return parseClass(psiClass, event);
+                        return parseClass(psiClass,level,event);
                     }
                 }
             }
         }
+    }
+
+    private Map<String, Object> parseClass(PsiClass psiClass, int level, AnActionEvent event) {
+        ErrorLogs.getInstance().write("class: " + psiClass.getQualifiedName());
+        PsiAnnotation annotation = psiClass.getAnnotation(com.fasterxml.jackson.annotation.JsonIgnoreType.class.getName());
+        if (annotation != null) {
+            return null;
+        }
+        Map<String,Object> map = new LinkedHashMap<>();
+        for (PsiField field : psiClass.getAllFields()) {
+            Object obj = parseFieldValueType(field.getType(), level,event,field.getName());
+            ErrorLogs.getInstance().write(field.getName() + ":" + (obj != null ? obj.toString() : "null"));
+            map.put(field.getName(),obj);
+        }
+        return map;
     }
 
     /**

@@ -14,6 +14,6 @@ public class FakeDecimal implements JsonFakeValuesService {
 
     @Override
     public Object randomValue(String valueName) {
-        return null;
+        return 0;
     }
 }

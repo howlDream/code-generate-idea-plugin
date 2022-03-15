@@ -1,0 +1,140 @@
+package idea.postman;
+
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * postman collection construct
+ * @author zheng.li
+ */
+public class PostmanCollection {
+
+    private Info info = new Info();
+
+    private Item0 item = new Item0();
+
+    private PostmanCollection(Info info, Item0 item) {
+        this.info = info;
+        this.item = item;
+    }
+
+    public Info getInfo() {
+        return info;
+    }
+
+    public Item0 getItem() {
+        return item;
+    }
+
+    public void setInfo(Info info) {
+        this.info = info;
+    }
+
+    public void setItem(Item0 item) {
+        this.item = item;
+    }
+
+
+    /**
+     * collection info
+     */
+    public static class Info {
+
+        public String postmanId = "";
+
+        public String name;
+
+        public String schema = "https://schema.getpostman.com/json/collection/v2.1.0/collection.json";
+
+    }
+
+    /**
+     * outer item
+     */
+    public static class Item0 {
+
+        public String name;
+
+        public List<Item1> item;
+
+    }
+
+    /**
+     * inner item
+     */
+    public static class Item1 {
+
+        public String name;
+
+        public Request request;
+
+        public List<String> response = new ArrayList<>();
+
+    }
+
+    public static class Request {
+
+        public String method = "POST";
+
+        public List<String> header = new ArrayList<>();
+
+        public Body body = new Body();
+
+        public Url url;
+
+    }
+
+    public static class Body {
+
+        public String mode = "raw";
+
+        public String raw = "{}";
+
+        public Options options = new Options();
+
+    }
+
+    public static class Options {
+
+        public RawJson raw = new RawJson();
+    }
+
+    public static class RawJson {
+        public String language = "json";
+    }
+
+    public static class Url {
+
+        public String raw;
+
+        public List<String> host = Collections.singletonList("localhost");
+
+        public String port;
+
+        public List<String> path;
+
+    }
+
+
+    public static class PostmanCollectionBuilder {
+        private Info info;
+        private Item0 item;
+
+        private PostmanCollectionBuilder(Info info, Item0 item) {
+            this.info = info;
+            this.item = item;
+        }
+
+        public static PostmanCollectionBuilder aPostmanCollection(Info info, Item0 item) {
+            return new PostmanCollectionBuilder(info, item);
+        }
+
+        public PostmanCollection build() {
+
+            return new PostmanCollection(info, item);
+        }
+    }
+}

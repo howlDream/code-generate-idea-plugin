@@ -1,6 +1,7 @@
 package idea.action;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -33,6 +34,7 @@ import idea.fake.FakeString;
 import idea.fake.JsonFakeValuesService;
 import idea.log.BaseLogs;
 import idea.log.ErrorLogs;
+import idea.postman.PostmanCollection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.uast.UClass;
 import org.jetbrains.uast.UastUtils;
@@ -83,20 +85,6 @@ public class CreatePostManFileAction extends AnAction {
         normalTypes.put("LocalDate", new FakeLocalDate());
     }
 
-    /**
-     * info
-     * 替换：postmanId,名称
-     */
-    private static String POSTMAN_INFO_START = "{\"info\":{\"_postman_id\":\"%s\",\"name\":\"%s\",\"schema\":\"https://schema.getpostman.com/json/collection/v2.1.0/collection.json\"},";
-    private static String POSTMAN_ITEM_START = "\"item\":[{\"name\":\"%s\",\"item\":[";
-    /**
-     * item主题
-     * 替换：接口地址，raw，接口地址，port,path
-     */
-    private static String POSTMAN_ITEM = "{\"name\":\"localhost:%s\",\"request\":{\"method\":\"POST\",\"header\":[],\"body\":{\"mode\":\"raw\",\"raw\":%s,\"options\":{\"raw\":{\"language\":\"json\"}}},\"url\":{\"raw\":\"localhost:%s\",\"host\":[\"localhost\"],\"port\":%s,\"path\":[%s]}},\"response\":[]}";
-    private static String POSTMAN_ITEM_END = "]}]";
-    private static String POSTMAN_INFO_END = "}";
-
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
@@ -135,35 +123,41 @@ public class CreatePostManFileAction extends AnAction {
     }
 
     /**
-     * 生成postman文件
+     * 生成postman文件 new
      * @param kv 接口和入参映射
      */
     private static void generatePostmanFile(Map<String, Object> kv,String fileName,String port) throws IOException, MyException {
         Random random = new Random(System.currentTimeMillis());
         fileName = fileName.replace(".java","");
-        StringBuilder infoStart = new StringBuilder(String.format(POSTMAN_INFO_START, random.nextLong() + "AUTO", fileName));
-        // item拼凑
-        infoStart.append(String.format(POSTMAN_ITEM_START,fileName));
+        PostmanCollection.Info info = new PostmanCollection.Info();
+        info.name = fileName;
+        info.postmanId = random.nextLong() + "AUTO";
+        PostmanCollection.Item0 item = new PostmanCollection.Item0();
+        item.item = new ArrayList<>();
         for (Map.Entry<String, Object> entry : kv.entrySet()) {
             String apiPath = port + entry.getKey();
-            String raw = JSON.toJSONString(entry.getValue());
-            // 添加转义字符
-            raw = "\"" + raw.replaceAll("\"", "\\\\\"") + "\"";
             String[] pathArray = entry.getKey().split("/");
-            StringBuilder pathPart = new StringBuilder();
-            for (String s : pathArray) {
-                if ("\"".equals(s) || "".equals(s)) {
-                    continue;
-                }
-                pathPart.append("\"").append(s).append("\",");
-            }
-            pathPart.deleteCharAt(pathPart.length() - 1);
-            String item = String.format(POSTMAN_ITEM,apiPath,raw,apiPath,port,pathPart);
-            infoStart.append(item).append(",");
+            String raw = JSON.toJSONString(entry.getValue());
+            PostmanCollection.Item1 item1 = new PostmanCollection.Item1();
+
+            item1.name = apiPath;
+            PostmanCollection.Url url = new PostmanCollection.Url();
+            url.raw = apiPath;
+            url.port = port;
+            url.path = Arrays.asList(pathArray);
+
+            PostmanCollection.Request request = new PostmanCollection.Request();
+            request.url = url;
+            PostmanCollection.Body body = new PostmanCollection.Body();
+            body.raw = raw;
+            request.body = body;
+
+            item1.request = request;
+            // 加入接口集合
+            item.item.add(item1);
         }
-        infoStart.deleteCharAt(infoStart.length() - 1);
-        infoStart.append(POSTMAN_ITEM_END).append(POSTMAN_INFO_END);
-        String content = infoStart.toString();
+        PostmanCollection postmanCollection = PostmanCollection.PostmanCollectionBuilder.aPostmanCollection(info,item).build();
+        String content = JSONObject.toJSONString(postmanCollection);
         File outFile = new File(BaseLogs.LOG_PATH + "/collection-" + fileName + ".json");
         if (!outFile.exists()) {
             boolean isOut = outFile.createNewFile();
@@ -178,6 +172,7 @@ public class CreatePostManFileAction extends AnAction {
         } catch (IOException e) {
             throw new MyException("create file fail！");
         }
+
     }
 
     /**
@@ -369,21 +364,23 @@ public class CreatePostManFileAction extends AnAction {
     }
 
     public static void main(String[] args) {
-        System.out.println(String.format(POSTMAN_INFO_START,"q1231231","测试") + POSTMAN_ITEM_START
-                + String.format(POSTMAN_ITEM,"6012/api/test/test","{\"myDistributorInfoId\":1}","6012/api/test/test","\"test\",\"test\"")
-                + POSTMAN_ITEM_END
-                + POSTMAN_INFO_END
-        );
-        try {
-            Map<String,Object> map = new HashMap<>();
-            Map<String,Object> valueMap = new HashMap<>();
-            valueMap.put("id",1);
-            valueMap.put("name","232");
-            map.put("/api/test/test",valueMap);
-            generatePostmanFile(map,"file","1111");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        System.out.println(String.format(POSTMAN_INFO_START,"q1231231","测试") + POSTMAN_ITEM_START
+//                + String.format(POSTMAN_ITEM,"6012/api/test/test","{\"myDistributorInfoId\":1}","6012/api/test/test","\"test\",\"test\"")
+//                + POSTMAN_ITEM_END
+//                + POSTMAN_INFO_END
+//        );
+//        try {
+//            Map<String,Object> map = new HashMap<>();
+//            Map<String,Object> valueMap = new HashMap<>();
+//            valueMap.put("id",1);
+//            valueMap.put("name","232");
+//            map.put("/api/test/test",valueMap);
+//            generatePostmanFile(map,"file","1111");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
+
     }
 
 }

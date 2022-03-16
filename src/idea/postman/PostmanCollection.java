@@ -1,6 +1,7 @@
 package idea.postman;
 
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,9 +13,9 @@ import java.util.List;
  */
 public class PostmanCollection {
 
-    private Info info = new Info();
+    private Info info;
 
-    private Item0 item = new Item0();
+    private Item0 item;
 
     private PostmanCollection(Info info, Item0 item) {
         this.info = info;
@@ -71,7 +72,13 @@ public class PostmanCollection {
 
         public Request request;
 
-        public List<String> response = new ArrayList<>();
+        public List<String> response;
+
+        private Item1(String name,Request request,List<String> response) {
+            this.name = name;
+            this.request = request;
+            this.response = response;
+        }
 
     }
 
@@ -118,7 +125,9 @@ public class PostmanCollection {
 
     }
 
-
+    /**
+     * PostmanCollection builder
+     */
     public static class PostmanCollectionBuilder {
         private Info info;
         private Item0 item;
@@ -137,4 +146,44 @@ public class PostmanCollection {
             return new PostmanCollection(info, item);
         }
     }
+
+    /**
+     * Item1 builder
+     */
+    public static class Item1Builder {
+
+        private String name;
+
+        private Request request;
+
+        private List<String> response;
+
+        private Item1Builder(String name,Request request,List<String> response) {
+            this.name = name;
+            this.request = request;
+            this.response = response;
+        }
+
+        public static Item1Builder buildItem1 (String port,String apiPath,String[] pathArray,String raw) {
+
+            PostmanCollection.Url url = new PostmanCollection.Url();
+            url.raw = apiPath;
+            url.port = port;
+            url.path = Arrays.asList(pathArray);
+
+            PostmanCollection.Request request = new PostmanCollection.Request();
+            request.url = url;
+            PostmanCollection.Body body = new PostmanCollection.Body();
+            body.raw = raw;
+            request.body = body;
+
+            return new Item1Builder(apiPath,request,new ArrayList<>());
+        }
+
+        public Item1 build() {
+            return new Item1(name,request,response);
+        }
+
+    }
+
 }

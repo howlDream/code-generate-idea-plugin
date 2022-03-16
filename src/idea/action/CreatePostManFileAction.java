@@ -138,21 +138,7 @@ public class CreatePostManFileAction extends AnAction {
             String apiPath = port + entry.getKey();
             String[] pathArray = entry.getKey().split("/");
             String raw = JSON.toJSONString(entry.getValue());
-            PostmanCollection.Item1 item1 = new PostmanCollection.Item1();
-
-            item1.name = apiPath;
-            PostmanCollection.Url url = new PostmanCollection.Url();
-            url.raw = apiPath;
-            url.port = port;
-            url.path = Arrays.asList(pathArray);
-
-            PostmanCollection.Request request = new PostmanCollection.Request();
-            request.url = url;
-            PostmanCollection.Body body = new PostmanCollection.Body();
-            body.raw = raw;
-            request.body = body;
-
-            item1.request = request;
+            PostmanCollection.Item1 item1 = PostmanCollection.Item1Builder.buildItem1(port,apiPath,pathArray,raw).build();
             // 加入接口集合
             item.item.add(item1);
         }
@@ -186,10 +172,13 @@ public class CreatePostManFileAction extends AnAction {
         for (PsiMethod method : psiClass.getAllMethods()) {
             // 获取RequestMapping接口注解
             PsiAnnotation annotation  = method.getAnnotation("org.springframework.web.bind.annotation.RequestMapping");
+            if (annotation == null) {
+                annotation = method.getAnnotation("org.springframework.web.bind.annotation.PostMapping");
+            }
             if (annotation != null) {
                 // 接口地址
                 String value = getAttributeFromAnnotation(annotation, event);
-                Map<String,Object> requestMap = new HashMap<>();
+                Map<String,Object> requestMap = new HashMap<>(16);
                 for (PsiParameter parameter : method.getParameterList().getParameters()) {
                     // 获取入参类
                     final PsiElement target =  Objects.requireNonNull(parameter.getTypeElement()).getInnermostComponentReferenceElement().resolve();
@@ -199,7 +188,7 @@ public class CreatePostManFileAction extends AnAction {
                     }
                     final PsiClass targetClass = (PsiClass)target;
                     if (targetClass instanceof ClsClassImpl) {
-                        // 参数维java基本类型，非requestBody,封装后直接返回
+                        // 参数为java基本类型，非requestBody,封装后直接返回
                         value += "?" + parameter.getName() + "=1";
                         requestMap.put(parameter.getName(),1);
                         map.put(value,requestMap);

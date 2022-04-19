@@ -181,6 +181,9 @@ public class CreatePostManFileAction extends AnAction {
                 Map<String,Object> requestMap = new HashMap<>(16);
                 for (PsiParameter parameter : method.getParameterList().getParameters()) {
                     // 获取入参类
+                    if (parameter.getTypeElement() == null || parameter.getTypeElement().getInnermostComponentReferenceElement() == null) {
+                        continue;
+                    }
                     final PsiElement target =  Objects.requireNonNull(parameter.getTypeElement()).getInnermostComponentReferenceElement().resolve();
                     if (!(target instanceof PsiClass)) {
                         ExceptionMessages.showError(event.getProject(),"not class");

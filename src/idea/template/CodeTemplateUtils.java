@@ -6,8 +6,6 @@ import idea.log.ErrorLogs;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -113,12 +111,12 @@ public class CodeTemplateUtils {
 
     public static void modelCodeGenerate(String module,String moduleLittle) throws IOException, MyException {
         assert threadLocal != null;
-        codeGenerate(module,moduleLittle,MODEL_TEMPLATE,threadLocal.get().modelPath,SystemConstance.MODEL_SUFFIX,threadLocal.get().modelPath);
+        codeGenerate(module,moduleLittle,MODEL_TEMPLATE,threadLocal.get().pojoPath,SystemConstance.MODEL_SUFFIX,threadLocal.get().pojoPath);
     }
 
     public static void listModelCodeGenerate(String module,String moduleLittle) throws IOException, MyException {
         assert threadLocal != null;
-        codeGenerate(module,moduleLittle,LIST_MODEL_TEMPLATE,threadLocal.get().modelPath,SystemConstance.LIST_MODEL_SUFFIX, threadLocal.get().modelPath);
+        codeGenerate(module,moduleLittle,LIST_MODEL_TEMPLATE,threadLocal.get().pojoPath,SystemConstance.LIST_MODEL_SUFFIX, threadLocal.get().pojoPath);
     }
 
     /**
@@ -175,7 +173,7 @@ public class CodeTemplateUtils {
         param.put("entityPath",filePathToPackagePath(threadLocal.get().entityPath));
         param.put("mapperPath",filePathToPackagePath(threadLocal.get().mapperPath));
         param.put("servicePath",filePathToPackagePath(threadLocal.get().servicePath));
-        param.put("modelPath",filePathToPackagePath(threadLocal.get().modelPath));
+        param.put("modelPath",filePathToPackagePath(threadLocal.get().pojoPath));
         param.put("requestPath",filePathToPackagePath(threadLocal.get().requestPath));
         param.put("interfacePath",filePathToPackagePath(threadLocal.get().interfacePath));
         param.put("controllerPath",filePathToPackagePath(threadLocal.get().controllerPath));

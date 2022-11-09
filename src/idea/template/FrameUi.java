@@ -37,23 +37,21 @@ public class FrameUi extends JFrame {
     private JTextField moduleField = new JTextField(10);
     private JTextField keyField = new JTextField(10);
     private JTextField serviceField = new JTextField("service",10);
-    private JTextField requestField = new JTextField("request",10);
-    private JTextField modelField = new JTextField("model",10);
-    private JTextField interfaceField = new JTextField("interface",10);
+    private JTextField pojoField = new JTextField("pojo",10);
+    private JTextField entityField = new JTextField("entity",10);
+    private JTextField daoField = new JTextField("dao",10);
     private JTextField controllerField = new JTextField("controller",10);
 
     private JCheckBox serviceBox = new JCheckBox(BoxEnum.SERVICE.name);
-    private JCheckBox getRequestBox = new JCheckBox(BoxEnum.GET_REQUEST.name);
+    private JCheckBox pojoBox = new JCheckBox(BoxEnum.POJO.name);
     private JCheckBox listRequestBox = new JCheckBox(BoxEnum.LIST_REQUEST.name);
-    private JCheckBox getModelBox = new JCheckBox(BoxEnum.GET_MODEL.name);
-    private JCheckBox listModelBox = new JCheckBox(BoxEnum.LIST_MODEL.name);
-    private JCheckBox interfaceBox = new JCheckBox(BoxEnum.INTERFACE.name);
+    private JCheckBox controllerBox = new JCheckBox(BoxEnum.CONTROLLER.name);
 
     private JCheckBox pathSettingBox = new JCheckBox("是否使用以下路径配置");
 
 
-    private List<JTextField> pathFieldList = Arrays.asList(serviceField,requestField,modelField,interfaceField,controllerField);
-    private List<JCheckBox> boxList = Arrays.asList(serviceBox,getModelBox,getRequestBox,listModelBox,listRequestBox,interfaceBox);
+    private List<JTextField> pathFieldList = Arrays.asList(serviceField, pojoField, entityField, daoField,controllerField);
+    private List<JCheckBox> boxList = Arrays.asList(serviceBox,pojoBox,listRequestBox, controllerBox);
 
     public FrameUi(AnActionEvent anActionEvent) throws HeadlessException {
         VirtualFile file = LangDataKeys.VIRTUAL_FILE.getData(anActionEvent.getDataContext());
@@ -152,20 +150,14 @@ public class FrameUi extends JFrame {
                         CodeTemplateUtils.serviceCodeGenerate(module,moduleLittle);
                         CodeTemplateUtils.serviceImplCodeGenerate(module,moduleLittle);
                         break;
-                    case GET_MODEL:
+                    case POJO:
                         CodeTemplateUtils.modelCodeGenerate(module,moduleLittle);
-                        break;
-                    case LIST_MODEL:
-                        CodeTemplateUtils.listModelCodeGenerate(module,moduleLittle);
-                        break;
-                    case GET_REQUEST:
-                        CodeTemplateUtils.getRequestCodeGenerate(module,moduleLittle);
                         break;
                     case LIST_REQUEST:
                         CodeTemplateUtils.listRequestCodeGenerate(module,moduleLittle);
                         break;
-                    case INTERFACE:
-                        CodeTemplateUtils.interfaceCodeGenerate(module,moduleLittle);
+                    case CONTROLLER:
+//                        CodeTemplateUtils.interfaceCodeGenerate(module,moduleLittle);
                         CodeTemplateUtils.controllerCodeGenerate(module,moduleLittle);
                         break;
                     default:
@@ -218,11 +210,9 @@ public class FrameUi extends JFrame {
          * service
          */
         SERVICE("service"),
-        GET_REQUEST("getRequest"),
+        POJO("pojo"),
         LIST_REQUEST("listRequest"),
-        GET_MODEL("getModel"),
-        LIST_MODEL("listModel"),
-        INTERFACE("interface&controller");
+        CONTROLLER("controller");
 
         private String name;
 

@@ -8,13 +8,14 @@ package idea.template;
 public enum PathTypeEnum {
 
     /**
-     * service
+     * service层路径
      */
     SERVICE("service"),
-    REQUEST("request"),
-    MODEL("model"),
+    POJO("pojo"),
     CONTROLLER("controller"),
-    INTERFACE("interface");
+    ENTITY("entity"),
+    DAO("dao")
+    ;
 
     private String name;
 

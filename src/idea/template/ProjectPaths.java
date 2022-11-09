@@ -39,14 +39,14 @@ public class ProjectPaths {
     /**
      * 当前项目model文件目录
      */
-    public String modelPath = "com";
+    public String pojoPath = "com";
     /**
      * 实体文件目录
      */
     public String entityPath = "com";
 
     /**
-     * mapper文件目录
+     * mapper dao层 文件目录
      */
     public String mapperPath;
 
@@ -61,20 +61,14 @@ public class ProjectPaths {
      */
     public ProjectPaths(String path) throws MyException {
         String moduleName = getModuleName(path);
-        this.servicePath = path + "/" + moduleName + "-service-spring-boot/src/main/java/com/kykj/tesla/"+ moduleName + "/service/";
+        this.servicePath = path + "/" + moduleName + "-service/src/main/java/com/xbongbong/work/order/v2/service/";
         this.serviceImplPath = this.servicePath + "impl/";
-        if (RESTAURANT.equals(moduleName)) {
-            this.interfacePath = path + "/" + moduleName + "-service-interface/src/main/java/com/kykj/"+ moduleName + "/service/";
-        } else if (MALL.equals(moduleName)){
-            this.interfacePath = path + "/" + moduleName + "-service-interface/src/main/java/com/kykj/tesla/"+ moduleName + "/v2/";
-        } else {
-            this.interfacePath = path + "/" + moduleName + "-service-interface/src/main/java/com/kykj/tesla/"+ moduleName + "/service/";
-        }
-        this.modelPath = this.interfacePath + "model/";
+
+        this.pojoPath = path + "/" + moduleName + "-service/src/main/java/com/xbongbong/work/order/v2/pojo/";
         this.requestPath = this.interfacePath + "request/";
-        this.controllerPath = path + "/" + moduleName + "-service-spring-boot/src/main/java/com/kykj/tesla/"+ moduleName + "/controller/";
-        this.entityPath = path + "/" + moduleName + "-service-spring-boot/src/main/java/com/kykj/tesla/"+ moduleName + "/entity/";
-        this.mapperPath = path + "/" + moduleName + "-service-spring-boot/src/main/java/com/kykj/tesla/"+ moduleName + "/mapper/dao/";
+        this.controllerPath = path + "/" + moduleName + "-web/src/main/java/com/xbongbong/work/order/v2/controller/";
+        this.entityPath = path + "/" + moduleName + "-model/src/main/java/com/xbongbong/work/order/v2/domain/entity/";
+        this.mapperPath = path + "/" + moduleName + "-model/src/main/java/com/xbongbong/work/order/v2/domain/dao/";
     }
 
     /**
@@ -94,18 +88,16 @@ public class ProjectPaths {
                 if (PathTypeEnum.SERVICE.getName().equals(e.getName())) {
                     this.servicePath = filePath;
                     this.serviceImplPath = filePath + "impl/";
-                } else if (PathTypeEnum.REQUEST.getName().equals(e.getName())) {
-                    this.requestPath = filePath;
-                } else if (PathTypeEnum.MODEL.getName().equals(e.getName())) {
-                    this.modelPath = filePath;
-                } else if (PathTypeEnum.INTERFACE.getName().equals(e.getName())) {
-                    this.interfacePath = filePath;
+                } else if (PathTypeEnum.POJO.getName().equals(e.getName())) {
+                    this.pojoPath = filePath;
                 } else if (PathTypeEnum.CONTROLLER.getName().equals(e.getName())) {
                     this.controllerPath = filePath;
+                } else if (PathTypeEnum.DAO.getName().equals(e.getName())) {
+                    this.mapperPath = filePath;
+                } else if (PathTypeEnum.ENTITY.getName().equals(e.getName())) {
+                    this.entityPath = filePath;
                 }
             });
-            this.entityPath = this.modelPath;
-            this.mapperPath = this.modelPath;
         } catch (Exception e) {
             throw new MyException("路径读取失败");
         }
@@ -114,8 +106,10 @@ public class ProjectPaths {
     private String getModuleName(String path) throws MyException {
         String name;
         try {
-            String serviceName = path.substring(path.lastIndexOf("/") + 1);
-            name  = serviceName.substring(0,serviceName.lastIndexOf("-"));
+           name = path.substring(path.lastIndexOf("/") + 1);
+           if ("xbb-work-order".equals(name)) {
+               name = name.replaceFirst("xbb-","");
+           }
         } catch (Exception e) {
             ErrorLogs.getInstance().write(e.getMessage());
             throw new MyException("获取项目名失败！");

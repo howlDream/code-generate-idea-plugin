@@ -20,7 +20,6 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiPrimitiveType;
 import com.intellij.psi.PsiType;
-import com.intellij.psi.impl.compiled.ClsClassImpl;
 import com.intellij.psi.util.PsiUtil;
 import idea.exception.ExceptionMessages;
 import idea.exception.MyException;
@@ -52,7 +51,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -169,6 +167,20 @@ public class CreatePostManFileAction extends AnAction {
      */
     private Map<String, Object> parseInterface(PsiClass psiClass, AnActionEvent event){
         Map<String,Object> map = new LinkedHashMap<>(16);
+        // 获取类上的RequestMapping注解
+        PsiAnnotation classAnnotation  = psiClass.getAnnotation("org.springframework.web.bind.annotation.RequestMapping");
+        String urlPrefix = "";
+        if (classAnnotation != null) {
+            PsiAnnotationMemberValue annotationMemberValue = classAnnotation.findAttributeValue("value");
+            if (annotationMemberValue != null) {
+                String path = annotationMemberValue.getText();
+                if (path.contains("+")) {
+                    String variable = path.substring(0,path.indexOf("+")).trim();
+                    urlPrefix = "{{" + variable + "}}" + path.substring(path.indexOf("+"));
+                }
+                urlPrefix = urlPrefix.replaceAll("\"","").replaceAll("\\+","");
+            }
+        }
         for (PsiMethod method : psiClass.getAllMethods()) {
             // 获取RequestMapping接口注解
             PsiAnnotation annotation  = method.getAnnotation("org.springframework.web.bind.annotation.RequestMapping");
@@ -177,29 +189,35 @@ public class CreatePostManFileAction extends AnAction {
             }
             if (annotation != null) {
                 // 接口地址
-                String value = getAttributeFromAnnotation(annotation, event);
+                String value = getAttributeFromAnnotation(urlPrefix,annotation, event);
                 Map<String,Object> requestMap = new HashMap<>(16);
+                ErrorLogs.getInstance().write("method:  " + method.getName());
                 for (PsiParameter parameter : method.getParameterList().getParameters()) {
                     // 获取入参类
                     if (parameter.getTypeElement() == null || parameter.getTypeElement().getInnermostComponentReferenceElement() == null) {
                         continue;
                     }
-                    final PsiElement target =  Objects.requireNonNull(parameter.getTypeElement()).getInnermostComponentReferenceElement().resolve();
+                    final PsiElement target =  parameter.getTypeElement().getInnermostComponentReferenceElement().resolve();
                     if (!(target instanceof PsiClass)) {
                         ExceptionMessages.showError(event.getProject(),"not class");
                         continue;
                     }
                     final PsiClass targetClass = (PsiClass)target;
-                    if (targetClass instanceof ClsClassImpl) {
+                    ErrorLogs.getInstance().write("parameter：" + parameter.getText());
+                    if ( parameter.getTypeElement().isInferredType() ||
+                            parameter.getAnnotation("org.springframework.web.bind.annotation.RequestBody") == null ) {
                         // 参数为java基本类型，非requestBody,封装后直接返回
                         value += "?" + parameter.getName() + "=1";
                         requestMap.put(parameter.getName(),1);
                         map.put(value,requestMap);
+                        ErrorLogs.getInstance().write("非json入参");
                         continue;
                     }
                     for (PsiField allField : targetClass.getAllFields()) {
                         requestMap.put(allField.getName(),parseFieldValueType(allField.getType(),1,event,allField.getName()));
                     }
+                    // 只用第一个参数
+                    break;
 
                 }
                 map.put(value,requestMap);
@@ -215,7 +233,7 @@ public class CreatePostManFileAction extends AnAction {
      * @param event event
      * @return String
      */
-    private String getAttributeFromAnnotation(PsiAnnotation annotation, AnActionEvent event) {
+    private String getAttributeFromAnnotation(String urlPrefix,PsiAnnotation annotation, AnActionEvent event) {
 
         String annotationQualifiedName = annotation.getQualifiedName();
         if (annotationQualifiedName == null) {
@@ -229,7 +247,7 @@ public class CreatePostManFileAction extends AnAction {
             return "";
         }
         String httpMethodWithQuotes = annotationMemberValue.getText();
-        return httpMethodWithQuotes.substring(1, httpMethodWithQuotes.length() - 1);
+        return urlPrefix + httpMethodWithQuotes.substring(1, httpMethodWithQuotes.length() - 1);
 
     }
 
@@ -258,6 +276,10 @@ public class CreatePostManFileAction extends AnAction {
             //reference Type
             PsiClass psiClass = PsiUtil.resolveClassInClassTypeOnly(type);
             if (psiClass == null) {
+                return new LinkedHashMap<>();
+            }
+            if ("com.alibaba.fastjson.JSONObject".equals(type.getCanonicalText())) {
+                ErrorLogs.getInstance().write("JSONObject");
                 return new LinkedHashMap<>();
             }
             if (psiClass.isEnum()) {
@@ -296,7 +318,7 @@ public class CreatePostManFileAction extends AnAction {
                         return this.getFakeValue(normalTypes.get(retain.get(0)),valueName);
                     } else {
 
-                        if (level > 500) {
+                        if (level > 5) {
                             return null;
                         }
                         return parseClass(psiClass,level,event);
@@ -340,6 +362,8 @@ public class CreatePostManFileAction extends AnAction {
                 return 0.0;
             case "char":
                 return '0';
+            case "JSONObject":
+                return new JSONObject();
             default:
                 return null;
         }

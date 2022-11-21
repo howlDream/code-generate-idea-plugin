@@ -68,6 +68,13 @@ public class CreatePostManFileAction extends AnAction {
 
     private final Map<String, JsonFakeValuesService> normalTypes = new HashMap<>();
 
+    /**
+     * 排除的字段
+     */
+    private static List<String> excludeField = Arrays.asList("httpHeader","browserInfo","ip","loginUserName","ignoreConCheck",
+                                                            "loginUser","locale","distributorMark");
+
+
     {
         FakeDecimal fakeDecimal = new FakeDecimal();
         FakeLocalDateTime fakeLocalDateTime = new FakeLocalDateTime();
@@ -214,6 +221,12 @@ public class CreatePostManFileAction extends AnAction {
                         continue;
                     }
                     for (PsiField allField : targetClass.getAllFields()) {
+                        if (targetClass.getSuperClass() != null) {
+                            if ("BaseDTO".equals(targetClass.getSuperClass().getName()) && excludeField.contains(allField.getName())) {
+                                // 父类一些基本入参，网关处理，这里不mock
+                                continue;
+                            }
+                        }
                         requestMap.put(allField.getName(),parseFieldValueType(allField.getType(),1,event,allField.getName()));
                     }
                     // 只用第一个参数

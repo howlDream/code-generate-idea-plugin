@@ -177,7 +177,8 @@ public class PostmanCollection {
             body.raw = raw;
             request.body = body;
 
-            return new Item1Builder(apiPath,request,new ArrayList<>());
+            int lastIndex = apiPath.lastIndexOf("/");
+            return new Item1Builder(apiPath.substring(lastIndex),request,new ArrayList<>());
         }
 
         public Item1 build() {

@@ -185,7 +185,7 @@ public class CreatePostManFileAction extends AnAction {
                     String variable = path.substring(0,path.indexOf("+")).trim();
                     urlPrefix = "{{" + variable + "}}" + path.substring(path.indexOf("+"));
                 }
-                urlPrefix = urlPrefix.replaceAll("\"","").replaceAll("\\+","");
+                urlPrefix = urlPrefix.replaceAll("\"","").replaceAll("\\+ ","").replaceAll("\\+","");
             }
         }
         for (PsiMethod method : psiClass.getAllMethods()) {

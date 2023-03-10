@@ -15,9 +15,9 @@ public class PostmanCollection {
 
     private Info info;
 
-    private Item0 item;
+    private List<Item0> item;
 
-    private PostmanCollection(Info info, Item0 item) {
+    private PostmanCollection(Info info, List<Item0> item) {
         this.info = info;
         this.item = item;
     }
@@ -26,7 +26,7 @@ public class PostmanCollection {
         return info;
     }
 
-    public Item0 getItem() {
+    public List<Item0> getItem() {
         return item;
     }
 
@@ -34,7 +34,7 @@ public class PostmanCollection {
         this.info = info;
     }
 
-    public void setItem(Item0 item) {
+    public void setItem(List<Item0> item) {
         this.item = item;
     }
 
@@ -130,14 +130,14 @@ public class PostmanCollection {
      */
     public static class PostmanCollectionBuilder {
         private Info info;
-        private Item0 item;
+        private List<Item0> item;
 
-        private PostmanCollectionBuilder(Info info, Item0 item) {
+        private PostmanCollectionBuilder(Info info, List<Item0> item) {
             this.info = info;
             this.item = item;
         }
 
-        public static PostmanCollectionBuilder aPostmanCollection(Info info, Item0 item) {
+        public static PostmanCollectionBuilder aPostmanCollection(Info info, List<Item0> item) {
             return new PostmanCollectionBuilder(info, item);
         }
 

@@ -139,6 +139,7 @@ public class CreatePostManFileAction extends AnAction {
         info.postmanId = random.nextLong() + "AUTO";
         PostmanCollection.Item0 item = new PostmanCollection.Item0();
         item.item = new ArrayList<>();
+        item.name = fileName;
         for (Map.Entry<String, Object> entry : kv.entrySet()) {
             String apiPath = port + entry.getKey();
             String[] pathArray = entry.getKey().split("/");
@@ -147,7 +148,7 @@ public class CreatePostManFileAction extends AnAction {
             // 加入接口集合
             item.item.add(item1);
         }
-        PostmanCollection postmanCollection = PostmanCollection.PostmanCollectionBuilder.aPostmanCollection(info,item).build();
+        PostmanCollection postmanCollection = PostmanCollection.PostmanCollectionBuilder.aPostmanCollection(info,Collections.singletonList(item)).build();
         String content = JSONObject.toJSONString(postmanCollection);
         File outFile = new File(BaseLogs.LOG_PATH + "/collection-" + fileName + ".json");
         if (!outFile.exists()) {

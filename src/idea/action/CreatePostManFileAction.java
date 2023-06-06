@@ -351,7 +351,7 @@ public class CreatePostManFileAction extends AnAction {
         Map<String,Object> map = new LinkedHashMap<>();
         for (PsiField field : psiClass.getAllFields()) {
             Object obj = parseFieldValueType(field.getType(), level,event,field.getName());
-            ErrorLogs.getInstance().write(field.getName() + ":" + (obj != null ? obj.toString() : "null"));
+//            ErrorLogs.getInstance().write(field.getName() + ":" + (obj != null ? obj.toString() : "null"));
             map.put(field.getName(),obj);
         }
         return map;

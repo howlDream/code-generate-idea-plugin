@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * postman collection construct
@@ -86,7 +87,10 @@ public class PostmanCollection {
 
         public String method = "POST";
 
-        public List<String> header = new ArrayList<>();
+        /**
+         * 增加sign参数，可跳过验证
+         */
+        public List<Map<String,Object>> header = Collections.singletonList(Map.of("key", "sign", "value", "xbbTest", "type", "default"));
 
         public Body body = new Body();
 

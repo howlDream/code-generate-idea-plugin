@@ -181,8 +181,8 @@ public class PostmanCollection {
             body.raw = raw;
             request.body = body;
 
-            int lastIndex = apiPath.lastIndexOf("/");
-            return new Item1Builder(apiPath.substring(lastIndex),request,new ArrayList<>());
+            int index = apiPath.indexOf("/");
+            return new Item1Builder(apiPath.substring(index),request,new ArrayList<>());
         }
 
         public Item1 build() {

@@ -34,6 +34,7 @@ import idea.fake.JsonFakeValuesService;
 import idea.log.BaseLogs;
 import idea.log.ErrorLogs;
 import idea.postman.PostmanCollection;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.uast.UClass;
 import org.jetbrains.uast.UastUtils;
@@ -180,11 +181,16 @@ public class CreatePostManFileAction extends AnAction {
         String urlPrefix = "";
         if (classAnnotation != null) {
             PsiAnnotationMemberValue annotationMemberValue = classAnnotation.findAttributeValue("value");
+            if (annotationMemberValue == null || StringUtils.isEmpty(annotationMemberValue.getText())) {
+                annotationMemberValue = classAnnotation.findAttributeValue("path");
+            }
             if (annotationMemberValue != null) {
                 String path = annotationMemberValue.getText();
                 if (path.contains("+")) {
                     String variable = path.substring(0,path.indexOf("+")).trim();
                     urlPrefix = "{{" + variable + "}}" + path.substring(path.indexOf("+"));
+                } else {
+                    urlPrefix = path;
                 }
                 urlPrefix = urlPrefix.replaceAll("\"","").replaceAll("\\+ ","").replaceAll("\\+","");
             }
@@ -233,6 +239,10 @@ public class CreatePostManFileAction extends AnAction {
                     // 只用第一个参数
                     break;
 
+                }
+                if (!requestMap.containsKey("frontDev")) {
+                    // 不包含frontDev,则加一个
+                    requestMap.put("frontDev",1);
                 }
                 map.put(value,requestMap);
             }

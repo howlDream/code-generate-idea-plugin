@@ -21,6 +21,8 @@ public class FakeString implements JsonFakeValuesService {
             return "1";
         } else if ("platform".equals(valueName)) {
             return "all";
+        } else if ("frontDev".equals(valueName)) {
+            return "1";
         }
 
 

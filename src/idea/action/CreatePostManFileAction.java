@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiAnnotation;
@@ -94,7 +93,7 @@ public class CreatePostManFileAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
-        VirtualFile file = DataKeys.VIRTUAL_FILE.getData(event.getDataContext());
+        VirtualFile file = CommonDataKeys.VIRTUAL_FILE.getData(event.getDataContext());
         assert file != null;
         // 获取文件名
         String fileName = file.getName();
